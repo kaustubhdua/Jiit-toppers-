@@ -123,3 +123,8 @@
 .jt-record-actions{display:flex;flex-wrap:wrap;gap:9px;margin:-10px 0 22px}
 .jt-danger{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid #e2b8b0;border-radius:9px;background:#fff7f5;color:#8b4137;font-size:12px;font-weight:700;cursor:pointer}
 .jt-danger:disabled,.jt-account-button:disabled{opacity:.55;cursor:not-allowed}
+
+.jt-record-subject-edit{grid-template-columns:minmax(0,2fr) minmax(110px,1fr) auto;padding:14px 0 0;margin:14px 0 0;border-top:1px dashed var(--line)}
+.jt-record-subject-edit .jt-account-button{min-height:40px}
+@media(max-width:760px){.jt-record-subject-edit{grid-template-columns:repeat(2,minmax(0,1fr))}.jt-record-subject-edit .jt-account-button{grid-column:1/-1}}
+@media(max-width:520px){.jt-record-subject-edit{grid-template-columns:1fr}}
