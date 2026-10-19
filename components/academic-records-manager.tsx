@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { AcademicCsvImport } from './academic-csv-import';
 
-type Grade = { gradePoint: string | number; letterGrade: string | null; marksObtained: string | number | null; maxMarks: string | number | null; source: string; sourceLabel: string | null; observedAt: string };
-type AttendanceSnapshot = { classesHeld: number; classesAttended: number; targetPercent: string | number; source: string; sourceLabel: string | null; observedAt: string };
+type Grade = { id: string; gradePoint: string | number; letterGrade: string | null; marksObtained: string | number | null; maxMarks: string | number | null; source: string; sourceLabel: string | null; observedAt: string };
+type AttendanceSnapshot = { id: string; classesHeld: number; classesAttended: number; targetPercent: string | number; source: string; sourceLabel: string | null; observedAt: string };
 type Subject = { id: string; code: string; name: string; credits: string | number; grades: Grade[]; attendanceSnapshots: AttendanceSnapshot[] };
 type Term = { id: string; label: string; academicYear: number; semesterNumber: number; subjects: Subject[]; _count: { subjects: number; gradeRecords: number; attendanceSnapshots: number } };
 
@@ -171,6 +171,59 @@ export function AcademicRecordsManager() {
     } finally { setBusy(false); }
   }
 
+  async function deleteSubject(subject: Subject) {
+    if (!selectedTerm || !window.confirm(`Delete ${subject.code} and all its grade and attendance records? This cannot be undone.`)) return;
+    setBusy(true); setMessage(''); setError('');
+    try {
+      const response = await fetch(`/api/academic/terms/${selectedTerm.id}/subjects?subjectId=${encodeURIComponent(subject.id)}`, {
+        method: 'DELETE',
+        cache: 'no-store',
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error === 'SUBJECT_NOT_FOUND' ? 'This subject no longer exists.' : 'The subject and its records could not be deleted.');
+      await loadTerms();
+      setMessage(`Subject ${subject.code} and its grade/attendance records were deleted.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Subject deletion failed.');
+    } finally { setBusy(false); }
+  }
+
+  async function deleteGrade(subject: Subject) {
+    if (!selectedTerm || !window.confirm(`Delete the grade record for ${subject.code}?`)) return;
+    setBusy(true); setMessage(''); setError('');
+    try {
+      const response = await fetch(`/api/academic/terms/${selectedTerm.id}/grades`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentSubjectId: subject.id }),
+        cache: 'no-store',
+      });
+      if (!response.ok) throw new Error('The grade record could not be deleted.');
+      await loadTerms();
+      setMessage(`Grade record for ${subject.code} was deleted.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Grade deletion failed.');
+    } finally { setBusy(false); }
+  }
+
+  async function deleteAttendance(subject: Subject, snapshot: AttendanceSnapshot) {
+    if (!selectedTerm || !window.confirm(`Delete this attendance snapshot for ${subject.code}?`)) return;
+    setBusy(true); setMessage(''); setError('');
+    try {
+      const response = await fetch(`/api/academic/terms/${selectedTerm.id}/attendance`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ snapshotId: snapshot.id }),
+        cache: 'no-store',
+      });
+      if (!response.ok) throw new Error('The attendance snapshot could not be deleted.');
+      await loadTerms();
+      setMessage(`Attendance snapshot for ${subject.code} was deleted.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Attendance deletion failed.');
+    } finally { setBusy(false); }
+  }
+
   async function submitAttendance(event: FormEvent<HTMLFormElement>, subject: Subject) {
     event.preventDefault();
     if (!selectedTerm) return;
@@ -247,7 +300,7 @@ export function AcademicRecordsManager() {
         const attendance = subject.attendanceSnapshots[0];
         const percentage = attendance && attendance.classesHeld > 0 ? (attendance.classesAttended / attendance.classesHeld) * 100 : null;
         return <article className="jt-card jt-record-subject" key={subject.id}>
-          <div className="jt-record-subject-heading"><div><span className="jt-kicker">{subject.code} · {Number(subject.credits).toFixed(1)} CREDITS</span><h3>{subject.name}</h3></div><span className="jt-pill">Private records</span></div>
+          <div className="jt-record-subject-heading"><div><span className="jt-kicker">{subject.code} · {Number(subject.credits).toFixed(1)} CREDITS</span><h3>{subject.name}</h3></div><div className="jt-record-actions"><span className="jt-pill">Private records</span><button className="jt-danger" type="button" onClick={() => deleteSubject(subject)} disabled={busy}>Delete subject</button></div></div>
           <form className="jt-record-form jt-record-subject-edit" onSubmit={event => submitSubjectUpdate(event, subject)}>
             <label>Course name<input name="name" maxLength={120} defaultValue={subject.name} required /></label>
             <label>Credits<input name="credits" type="number" min="0.1" max="30" step="0.1" defaultValue={String(subject.credits)} required /></label>
@@ -264,6 +317,7 @@ export function AcademicRecordsManager() {
             <label>Marks obtained<input name="marksObtained" type="number" min="0" step="0.01" defaultValue={grade?.marksObtained == null ? '' : String(grade.marksObtained)} /></label>
             <label>Maximum marks<input name="maxMarks" type="number" min="0.01" step="0.01" defaultValue={grade?.maxMarks == null ? '' : String(grade.maxMarks)} /></label>
             <button className="jt-primary" type="submit" disabled={busy}>Save grade</button>
+            {grade && <button className="jt-danger" type="button" onClick={() => deleteGrade(subject)} disabled={busy}>Delete grade</button>}
           </form>
           <form className="jt-record-form jt-record-subform" onSubmit={event => submitAttendance(event, subject)}>
             <h4>Attendance snapshot</h4>
@@ -271,6 +325,7 @@ export function AcademicRecordsManager() {
             <label>Classes attended<input name="classesAttended" type="number" min="0" max="100000" step="1" defaultValue={attendance?.classesAttended ?? ''} required /></label>
             <label>Target (%)<input name="targetPercent" type="number" min="0" max="100" step="0.1" defaultValue={attendance ? String(attendance.targetPercent) : '75'} required /></label>
             <button className="jt-primary" type="submit" disabled={busy}>Save attendance</button>
+            {attendance && <button className="jt-danger" type="button" onClick={() => deleteAttendance(subject, attendance)} disabled={busy}>Delete latest snapshot</button>}
           </form>
           {grade && <small>Grade source: {grade.sourceLabel ?? grade.source}. Last updated {new Date(grade.observedAt).toLocaleString('en-IN')}.</small>}
           {attendance && <small>Attendance source: {attendance.sourceLabel ?? attendance.source}. Last updated {new Date(attendance.observedAt).toLocaleString('en-IN')}.</small>}
