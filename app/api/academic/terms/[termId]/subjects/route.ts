@@ -106,7 +106,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     });
     if (!existing) return jsonNoStore({ error: 'SUBJECT_NOT_FOUND' }, 404);
     const subject = await prisma.studentSubject.update({
-      where: { id: existing.id },
+      where: { id: existing.id, userId: auth.user.id, termId },
       data: { name: parsed.data.name, credits: parsed.data.credits },
     });
     return jsonNoStore({ subject });
