@@ -49,7 +49,12 @@ export function AcademicCsvImport({ termId, onImported }: { termId: string; onIm
     if (!file || !preview) return;
     setBusy(true); setError(''); setMessage('');
     try {
-      const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+      const fileBytes = new Uint8Array(await file.arrayBuffer());
+      const prefix = new TextEncoder().encode(`${termId}:${kind}:`);
+      const fingerprintInput = new Uint8Array(prefix.length + fileBytes.length);
+      fingerprintInput.set(prefix, 0);
+      fingerprintInput.set(fileBytes, prefix.length);
+      const digest = await crypto.subtle.digest('SHA-256', fingerprintInput);
       const checksum = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
       const response = await fetch(`/api/academic/terms/${termId}/imports`, {
         method: 'POST',
@@ -64,6 +69,7 @@ export function AcademicCsvImport({ termId, onImported }: { termId: string; onIm
           SUBJECT_METADATA_CONFLICT: 'A course code already exists with different name or credits. Resolve that conflict before importing.',
           TERM_NOT_FOUND: 'The selected term is no longer available. Reload the page.',
           IMPORT_TOO_LARGE: 'This import is too large.',
+          IMPORT_LIMIT_REACHED: 'This account has reached the current import-history limit. Contact support if you need old import records cleared.',
         };
         throw new Error(messageByCode[data.error] ?? 'Import failed. No rows were committed; check the file and try again.');
       }
@@ -79,7 +85,7 @@ export function AcademicCsvImport({ termId, onImported }: { termId: string; onIm
 
   return <article className="jt-card jt-csv-import">
     <h3>Import a CSV file</h3>
-    <p>Choose a grade-card or attendance CSV. The file is parsed in your browser; the original file is not uploaded. Only the rows you preview and confirm are sent to your account.</p>
+    <p>Choose a grade-card or attendance CSV. The file is parsed in your browser; the original file is not uploaded. Only the rows you preview and confirm are sent to your account. Matching grade rows replace the current grade for that subject; attendance imports add a dated snapshot. Course name/credit conflicts are rejected.</p>
     <div className="jt-record-form jt-csv-import-controls">
       <label>Import type<select value={kind} onChange={event => void onKindChange(event.target.value as 'GRADE_CARD' | 'ATTENDANCE')}><option value="GRADE_CARD">Grade card</option><option value="ATTENDANCE">Attendance</option></select></label>
       <label>CSV file<input id="academic-csv-file" type="file" accept=".csv,text/csv" onChange={onFileChange}/></label>
