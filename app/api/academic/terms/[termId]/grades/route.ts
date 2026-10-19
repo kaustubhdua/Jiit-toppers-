@@ -90,3 +90,48 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
   }
 }
+
+
+const gradeDeleteSchema = z.object({
+  studentSubjectId: z.string().min(1).max(100),
+}).strict();
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ termId: string }> }) {
+  if (request.headers.get('origin') !== request.nextUrl.origin) {
+    return jsonNoStore({ error: 'ORIGIN_NOT_ALLOWED' }, 403);
+  }
+  const auth = await requireAppUser();
+  if (!auth.ok) return jsonNoStore({ error: auth.code }, auth.status);
+  const { termId } = await params;
+
+  const boundedBody = await readJsonBounded(request, 16_000);
+  if (!boundedBody.ok) {
+    return jsonNoStore(
+      { error: boundedBody.reason === 'TOO_LARGE' ? 'REQUEST_TOO_LARGE' : 'INVALID_JSON' },
+      boundedBody.reason === 'TOO_LARGE' ? 413 : 400,
+    );
+  }
+  const parsed = gradeDeleteSchema.safeParse(boundedBody.value);
+  if (!parsed.success) return jsonNoStore({ error: 'INVALID_SUBJECT' }, 400);
+
+  try {
+    const term = await prisma.academicTerm.findFirst({
+      where: { id: termId, userId: auth.user.id },
+      select: { id: true },
+    });
+    if (!term) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+
+    const subject = await prisma.studentSubject.findFirst({
+      where: { id: parsed.data.studentSubjectId, userId: auth.user.id, termId },
+      select: { id: true },
+    });
+    if (!subject) return jsonNoStore({ error: 'SUBJECT_NOT_FOUND' }, 404);
+
+    const result = await prisma.gradeRecord.deleteMany({
+      where: { userId: auth.user.id, termId, studentSubjectId: subject.id },
+    });
+    return jsonNoStore({ deleted: result.count > 0, count: result.count });
+  } catch {
+    return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
+  }
+}
