@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { requireAppUser } from '@/lib/auth/current-user';
 import { prisma } from '@/lib/prisma';
+import { readJsonBounded } from '@/lib/http/read-json-bounded';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -43,7 +44,14 @@ const baseImport = {
 const importSchema = z.discriminatedUnion('kind', [
   z.object({ ...baseImport, kind: z.literal('GRADE_CARD'), rows: z.array(gradeRow).min(1).max(100) }).strict(),
   z.object({ ...baseImport, kind: z.literal('ATTENDANCE'), rows: z.array(attendanceRow).min(1).max(100) }).strict(),
-]);
+]).superRefine((value, context) => {
+  const seen = new Set<string>();
+  value.rows.forEach((row, index) => {
+    const code = row.code.toUpperCase();
+    if (seen.has(code)) context.addIssue({ code: 'custom', path: ['rows', index, 'code'], message: 'Course codes must be unique within an import.' });
+    seen.add(code);
+  });
+});
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ termId: string }> }) {
   if (request.headers.get('origin') !== request.nextUrl.origin) return jsonNoStore({ error: 'ORIGIN_NOT_ALLOWED' }, 403);
@@ -54,9 +62,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!auth.ok) return jsonNoStore({ error: auth.code }, auth.status);
   const { termId } = await params;
 
-  let body: unknown;
-  try { body = await request.json(); } catch { return jsonNoStore({ error: 'INVALID_JSON' }, 400); }
-  const parsed = importSchema.safeParse(body);
+  const bounded = await readJsonBounded(request, 256_000);
+  if (!bounded.ok) return jsonNoStore({ error: bounded.reason === 'TOO_LARGE' ? 'IMPORT_TOO_LARGE' : 'INVALID_JSON' }, bounded.reason === 'TOO_LARGE' ? 413 : 400);
+  const parsed = importSchema.safeParse(bounded.value);
   if (!parsed.success) return jsonNoStore({ error: 'INVALID_IMPORT' }, 400);
 
   const importInput = parsed.data;
@@ -66,6 +74,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   try {
     const term = await prisma.academicTerm.findFirst({ where: { id: termId, userId: auth.user.id }, select: { id: true } });
     if (!term) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+    const importCount = await prisma.academicImport.count({ where: { userId: auth.user.id } });
+    if (importCount >= 200) return jsonNoStore({ error: 'IMPORT_LIMIT_REACHED' }, 429);
 
     const result = await prisma.$transaction(async tx => {
       const importRecord = await tx.academicImport.create({
