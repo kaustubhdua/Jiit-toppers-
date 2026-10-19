@@ -14,7 +14,7 @@ export default async function AccountPage() {
       <span className="jt-kicker">ACCOUNT</span>
       <h1>Your profile.</h1>
       {!result.ok
-        ? <div className="jt-auth-state" role="status"><strong>Account storage is unavailable</strong><p>Your sign-in may be valid, but the application database is not ready. No profile changes were saved. Please try again later.</p></div>
+        ? <div className="jt-auth-state" role="status"><strong>{result.code === 'AUTH_NOT_CONFIGURED' ? 'Sign-in setup required' : result.code === 'AUTH_UNAVAILABLE' ? 'Sign-in is temporarily unavailable' : result.code === 'VERIFIED_EMAIL_REQUIRED' ? 'Verified email required' : 'Account storage is unavailable'}</strong><p>{result.code === 'AUTH_UNAVAILABLE' ? 'The authentication service could not be reached. No profile changes were saved.' : result.code === 'VERIFIED_EMAIL_REQUIRED' ? 'Verify your email address before managing an account.' : 'The application database or authentication setup is not ready. No profile changes were saved.'}</p></div>
         : <>
           <p className="jt-lead">Signed in as <strong>{result.user.email}</strong>.</p>
           <ProfileForm initialName={result.user.name}/><p><Link className="jt-auth-back" href="/account/academics">Manage academic terms, grades and attendance →</Link></p>
