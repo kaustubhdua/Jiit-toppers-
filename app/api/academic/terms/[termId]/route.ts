@@ -30,7 +30,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     await prisma.$transaction(async tx => {
       await tx.academicImport.deleteMany({ where: { userId: auth.user.id, termId } });
-      await tx.academicTerm.delete({ where: { id: termId } });
+      await tx.academicTerm.delete({ where: { id: termId, userId: auth.user.id } });
     });
     return jsonNoStore({ deleted: true });
   } catch {
