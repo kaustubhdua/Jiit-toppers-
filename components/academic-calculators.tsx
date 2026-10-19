@@ -66,7 +66,7 @@ export function AcademicCalculators() {
       </article>
       <article className="jt-card"><h3>CGPA estimator</h3><p>Enter all included courses across completed semesters. The calculation is credit-weighted.</p>
         <div className="jt-form-grid"><label>Cumulative course credits<input value={cumulativeCredits} onChange={event => setCumulativeCredits(event.target.value)} placeholder="e.g. 20,22,21" /></label><label>Cumulative grade points<input value={cumulativeGrades} onChange={event => setCumulativeGrades(event.target.value)} placeholder="e.g. 8.2,9,8.6" /></label></div>
-        <small>Include every relevant course/term according to your programme's rules. This does not read an official grade card.</small>
+        <small>Include every relevant course/term according to your programme&apos;s rules. This does not read an official grade card.</small>
         <p className="jt-result" aria-live="polite">{cgpa === null ? 'Enter matching cumulative credits and grade points to calculate an estimate.' : 'Estimated CGPA: ' + cgpa.toFixed(2)}</p>
       </article>
     </div>
