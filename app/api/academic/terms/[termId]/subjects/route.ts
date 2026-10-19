@@ -61,6 +61,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   try {
     if (!await ownedTerm(auth.user.id, termId)) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+    const subjectCount = await prisma.studentSubject.count({ where: { userId: auth.user.id, termId } });
+    if (subjectCount >= 50) return jsonNoStore({ error: 'SUBJECT_LIMIT_REACHED' }, 429);
     const subject = await prisma.studentSubject.create({
       data: {
         userId: auth.user.id,
