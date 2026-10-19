@@ -38,7 +38,7 @@ export async function GET() {
 }
 
 const termSchema = z.object({
-  label: z.string().trim().min(1).max(80),
+  label: z.string().trim().min(1).max(80).refine(value => ![...value].some(character => { const code = character.charCodeAt(0); return code < 32 || code === 127; })),
   academicYear: z.number().int().min(2000).max(2100),
   semesterNumber: z.number().int().min(1).max(12),
 }).strict();
