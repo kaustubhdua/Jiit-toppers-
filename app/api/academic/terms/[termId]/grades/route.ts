@@ -78,6 +78,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       source: 'MANUAL' as const,
       sourceLabel: 'Student-entered value',
       observedAt: new Date(),
+      // Manual edits must no longer be deleted as part of the earlier import's lifecycle.
+      importId: null,
     };
     const grade = await prisma.gradeRecord.upsert({
       where: { userId_termId_studentSubjectId: { userId: auth.user.id, termId, studentSubjectId: subject.id } },
