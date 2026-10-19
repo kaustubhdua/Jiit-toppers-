@@ -9,3 +9,18 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Source-aware Study Vault links */
+.jt-source-panel{margin-top:42px;padding-top:34px;border-top:1px solid var(--line)}
+.jt-source-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}
+.jt-source-heading h2{font:700 clamp(25px,4vw,36px) 'Space Grotesk';letter-spacing:-.035em;margin:8px 0 0;max-width:600px}
+.jt-source-heading>p{max-width:430px;color:var(--muted);line-height:1.6;margin:0;font-size:14px}
+.jt-source-meta{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.jt-source-meta svg{margin:0;color:#8c7858}
+.jt-source-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px}
+.jt-source-footer .jt-pill{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-size:11px}
+.jt-source-footer .jt-pill svg{margin:0}
+.jt-source-footer .jt-link-button{gap:8px;font-size:13px}
+.jt-source-footer .jt-link-button svg{margin:0}
+.jt-source-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:16px}
+@media(max-width:700px){.jt-source-heading{display:block}.jt-source-heading>p{margin-top:12px}}
