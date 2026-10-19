@@ -14,13 +14,13 @@ function jsonNoStore(body: unknown, status = 200) {
 
 const sharedRow = {
   code: z.string().trim().min(1).max(20).regex(/^[A-Za-z0-9][A-Za-z0-9._/-]*$/),
-  name: z.string().trim().min(1).max(120),
+  name: z.string().trim().min(1).max(120).refine(value => ![...value].some(character => { const code = character.charCodeAt(0); return code < 32 || code === 127; })),
   credits: z.number().min(0.1).max(30).refine(value => Math.abs(value * 10 - Math.round(value * 10)) < 1e-8),
 };
 const gradeRow = z.object({
   ...sharedRow,
   gradePoint: z.number().min(0).max(10),
-  letterGrade: z.string().max(4).nullable(),
+  letterGrade: z.string().max(4).regex(/^[A-Za-z0-9+-]{0,4}$/).nullable(),
   marksObtained: z.number().min(0).max(999999).nullable(),
   maxMarks: z.number().positive().max(999999).nullable(),
 }).strict().superRefine((value, context) => {
