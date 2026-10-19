@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { AuthStatus } from '@/lib/supabase/server';
+import type { AuthStatus } from '@/lib/supabase/config';
 import { JTHome } from './jt-home';
 import { JTNavigation, type Section } from './jt-navigation';
 import { JTWorkspace } from './jt-workspace';
