@@ -8,9 +8,13 @@ export async function POST(request: NextRequest) {
       const { data } = await supabase.auth.getClaims();
       if (data?.claims) await supabase.auth.signOut();
     } catch {
-      // Redirect without leaking provider errors; session refresh can retry on next request.
+      // Clear local auth cookies below even if the provider is unreachable.
     }
   }
 
-  return NextResponse.redirect(new URL('/', request.url), { status: 303 });
+  const response = NextResponse.redirect(new URL('/', request.url), { status: 303 });
+  for (const cookie of request.cookies.getAll()) {
+    if (cookie.name.startsWith('sb-')) response.cookies.delete(cookie.name);
+  }
+  return response;
 }
