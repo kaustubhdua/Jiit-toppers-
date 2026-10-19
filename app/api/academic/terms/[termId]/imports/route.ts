@@ -89,10 +89,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         const code = row.code.toUpperCase();
         const existingSubject = await tx.studentSubject.findUnique({ where: { termId_code: { termId, code } } });
         if (existingSubject && existingSubject.userId !== auth.user.id) throw new Error('ACADEMIC_OWNERSHIP_CONFLICT');
+        if (existingSubject && (existingSubject.name.trim().toLocaleLowerCase() !== row.name.trim().toLocaleLowerCase() || Math.abs(Number(existingSubject.credits) - row.credits) > 1e-8)) {
+          throw new Error('ACADEMIC_SUBJECT_CONFLICT');
+        }
 
-        const subject = existingSubject
-          ? await tx.studentSubject.update({ where: { id: existingSubject.id }, data: { name: row.name, credits: row.credits } })
-          : await tx.studentSubject.create({ data: { userId: auth.user.id, termId, code, name: row.name, credits: row.credits } });
+        const subject = existingSubject ?? await tx.studentSubject.create({
+          data: { userId: auth.user.id, termId, code, name: row.name, credits: row.credits },
+        });
 
         if (importInput.kind === 'GRADE_CARD') {
           const grade = row as z.infer<typeof gradeRow>;
@@ -136,6 +139,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return jsonNoStore(result, 201);
   } catch (error) {
     if (error instanceof Error && error.message === 'ACADEMIC_OWNERSHIP_CONFLICT') return jsonNoStore({ error: 'SUBJECT_OWNERSHIP_CONFLICT' }, 409);
+    if (error instanceof Error && error.message === 'ACADEMIC_SUBJECT_CONFLICT') return jsonNoStore({ error: 'SUBJECT_METADATA_CONFLICT' }, 409);
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return jsonNoStore({ error: 'DUPLICATE_IMPORT' }, 409);
     return jsonNoStore({ error: 'IMPORT_FAILED' }, 503);
   }
