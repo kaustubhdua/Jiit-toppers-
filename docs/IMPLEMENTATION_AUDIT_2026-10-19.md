@@ -8,9 +8,7 @@
 
 **Not production-ready yet.** The repository is a Next.js/TypeScript foundation prototype. Its UI shell, domain schema, health route, validation utility and local academic calculations are useful starting points, but most workspace cards are placeholders. There is no configured authentication or server-side user ownership enforcement, no verified migration/deployment process, no persisted user workflow, and no current approved JIIT portal connector.
 
-This branch makes two concrete improvements:
-1. Adds an attendance forecast (including maximum absences under a target) and a separate credit-weighted cumulative CGPA estimator with edge-case tests.
-2. Adds a source-aware Study Vault panel linking to PYQJIIT and the official JIIT Web kiosk landing page, without copying or republishing their content.
+This branch now includes: attendance forecasts and credit-weighted SGPA/CGPA estimates with tests; source-aware PYQJIIT/Web kiosk links; a browser-local study planner; Supabase Auth scaffolding and account profile flow; owner-scoped academic term/subject/grade/attendance APIs; and a bounded, locally parsed CSV import with preview, server validation, transaction and provenance. These features are code-complete slices but remain unverified against the real database while Supabase is inactive.
 
 These changes are **not** a claim that the overall project is finished.
 
@@ -30,18 +28,18 @@ These changes are **not** a claim that the overall project is finished.
 |---|---|---|
 | Home/navigation | UI works as a client-side prototype; navigation is local state, not deep-link routing | URL state/history, responsive and accessibility verification |
 | Academic calculators | Local attendance and SGPA existed; branch adds attendance forecasting and cumulative GPA calculation | Verify calculations against current programme policy; automated tests must pass |
-| CGPA/grade history | No persisted official grade history | Import, correction, provenance and deletion workflows |
-| Attendance records | No live/persisted attendance; calculations use user input only | Manual/import workflow and per-record source/freshness |
+| CGPA/grade history | Owner-scoped grade API, manual grade entry and CSV grade import implemented; live database unavailable | Verify live persistence, add correction/export/deletion and validate official grading policy |
+| Attendance records | Owner-scoped snapshots API, manual entry and CSV attendance import implemented; live database unavailable | Verify live persistence and history; add export/deletion and policy/source verification |
 | Study Vault | Workspace scaffold; branch adds outbound PYQJIIT and Web kiosk source cards | Approved resource catalogue, permissions, metadata, moderation and search |
 | PYQs | External archive link only; no archive copying or API integration | Maintainer permission/API/terms review before import or mirroring |
 | Timetable/exams | Placeholder cards | Verified source or user import, preview, timezone and stale-data handling |
 | Campus | Placeholder cards | Verified source catalogue, freshness and correction process |
 | Career/placements | Placeholder cards and schema | Sourced directory, moderation, privacy and anti-misinformation workflow |
 | Community | Placeholder cards and schema | Authentication, ownership, moderation, abuse reporting and rate limits |
-| Authentication | Supabase Auth passwordless email-link scaffold added (browser/server clients, cookie refresh proxy, callback and sign-out); real provider round trip unverified | Restore/configure project, verify email callback/session/logout and failure modes |
-| Authorization | Not implemented in app routes | Server-side ownership enforcement and explicit cross-user denial tests |
+| Authentication | Supabase Auth passwordless email-link scaffold, callback/sign-out, account profile and verified-session-to-app-user mapping implemented; real round trip unverified | Restore/configure project, verify email callback/session/logout, profile persistence and failure modes |
+| Authorization | Academic APIs derive userId from verified Supabase identity and scope term/subject/grade/attendance queries; no cross-user integration test against live DB yet | Add automated cross-user denial tests and review every future API/download |
 | Database | Prisma schema exists; no verified migration/deployment process in this audit | Lockfile, versioned migrations, staging validation, backup/restore |
-| File storage | No secure upload/download workflow | Private storage, type/size limits, signed downloads, retention/deletion |
+| File storage | Original CSV is parsed in-browser and is not uploaded; only validated rows are posted after confirmation. No raw-document storage exists. | Verify bounded payload handling; add private storage only with owner checks, signed downloads, retention/deletion |
 | JIIT integration | Not connected or verified | Permission and current sign-in flow review; connector must remain optional |
 | Monitoring/operations | Health endpoint only | Error monitoring policy, deployment smoke tests, alerting, rollback and restore |
 | Production | Not verified | Actual deployment, domain, environment variables and end-to-end smoke tests |
@@ -52,17 +50,17 @@ These changes are **not** a claim that the overall project is finished.
 2. **Authorization:** every private read/write/download must derive the owner from a verified server session. Never trust a client-supplied owner ID or role.
 3. **Database/migrations:** verify the live schema, migration history, policies, and staging/production separation. Do not apply schema changes blindly.
 4. **Reproducible dependency graph:** the implementation branch now commits package-lock.json and restores npm ci plus lockfile-based npm caching. The clean-install CI run must remain green on the latest branch head.
-5. **Data provenance:** every imported, manually entered, calculated, official, community or demo value must have a clear trust state and last-updated information.
-6. **File import security:** do not accept personal grade cards or attendance files until ownership, file limits, parser isolation, preview/confirmation, private storage and deletion are in place.
+5. **Data provenance:** imported grade/attendance records carry source, source label and observation timestamp; calculated/official/community/demo trust states still need consistent presentation across every workspace.
+6. **File import security:** CSV is parsed locally, previewed, bounded, validated server-side and committed transactionally with owner-scoped records. XLSX/PDF and raw-file storage remain disabled until parser isolation, private storage and deletion are implemented.
 7. **Live integration:** no JIIT login bypass or credential collection. Only consider an integration after current sign-in requirements and authorization are established.
 8. **Release verification:** CI/build results and production flows must be observed and recorded. Source inspection alone cannot establish readiness.
 
 ## P1 product work
 
-- Student-owned academic profile, programme/branch/batch and terms.
-- CSV/XLSX/PDF import with preview, correction, duplicate handling and import history.
-- Persisted grade history, SGPA/CGPA breakdown and what-if planning.
-- Attendance records/forecasts with subject and component distinctions where source data supports them.
+- Programme/branch/batch profile and current curriculum mapping.
+- XLSX/PDF imports with preview, parser isolation, correction and deletion/export.
+- SGPA/CGPA breakdown and what-if planning from persisted grade history, with current policy validation.
+- Attendance class-level history where supported by source data, plus export/deletion.
 - Resource/PYQ metadata, search, viewer, bookmarks and review/takedown process.
 - Timetable and exam import with source, timezone and freshness handling.
 - Study planner/tasks and calendar export.
@@ -93,6 +91,10 @@ These changes are **not** a claim that the overall project is finished.
 - components/academic-calculators.tsx: separate SGPA/CGPA input sets and attendance forecast UI.
 - components/pyq-discovery.tsx: source-aware external source cards.
 - lib/supabase/*, proxy.ts, app/sign-in/*, app/auth/*: passwordless email auth scaffold; not live-tested while Supabase is inactive.
+- lib/auth/current-user.ts and app/api/me: verified identity mapping and account profile API.
+- prisma schema + 20261019000100_academic_records migration: private term, subject, grade, attendance snapshot and import models.
+- app/api/academic/*: owner-scoped term, subject, grade, attendance and transactional CSV import APIs.
+- lib/academic/parse-csv.mjs/.ts, components/academic-csv-import.tsx and tests/academic-csv.test.mjs: bounded client-side CSV parsing, preview and validation.
 - lib/security/safe-redirect.mjs and tests/safe-redirect.test.mjs: validated local-only callback redirect helper.
 - components/jt-workspace.tsx: renders the source panel inside Study Vault.
 - app/globals.css: responsive styles for the new source panel.
