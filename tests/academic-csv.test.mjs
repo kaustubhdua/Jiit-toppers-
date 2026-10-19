@@ -37,6 +37,11 @@ test('rejects malformed quotes, oversized files and too many rows', () => {
   assert.equal(parseAcademicCsv(rows, 'GRADE_CARD').ok, false);
 });
 
+test('rejects columns that do not match the selected import type', () => {
+  assert.equal(parseAcademicCsv('code,name,credits,grade_point,classes_held\\nCS101,Algorithms,3,8,10', 'GRADE_CARD').ok, false);
+  assert.equal(parseAcademicCsv('code,name,credits,classes_held,classes_attended,grade_point\\nCS101,Algorithms,3,10,9,8', 'ATTENDANCE').ok, false);
+});
+
 test('requires both marks fields or neither', () => {
   assert.equal(parseAcademicCsv('code,name,credits,grade_point,marks_obtained\nCS101,Algorithms,3,8,40', 'GRADE_CARD').ok, false);
 });
