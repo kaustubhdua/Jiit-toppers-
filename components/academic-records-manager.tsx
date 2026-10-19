@@ -89,6 +89,26 @@ export function AcademicRecordsManager() {
     } finally { setBusy(false); }
   }
 
+  async function submitSubjectUpdate(event: FormEvent<HTMLFormElement>, subject: Subject) {
+    event.preventDefault();
+    if (!selectedTerm) return;
+    const form = new FormData(event.currentTarget);
+    setBusy(true); setMessage(''); setError('');
+    try {
+      const response = await fetch(`/api/academic/terms/${selectedTerm.id}/subjects`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: subject.id, name: String(form.get('name') ?? '').trim(), credits: Number(form.get('credits')) }),
+        cache: 'no-store',
+      });
+      if (!response.ok) throw new Error('Subject details were not saved. Check the name and credits.');
+      await loadTerms();
+      setMessage(`Subject details saved for ${subject.code}.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not save subject details.');
+    } finally { setBusy(false); }
+  }
+
   async function submitGrade(event: FormEvent<HTMLFormElement>, subject: Subject) {
     event.preventDefault();
     if (!selectedTerm) return;
@@ -228,6 +248,11 @@ export function AcademicRecordsManager() {
         const percentage = attendance && attendance.classesHeld > 0 ? (attendance.classesAttended / attendance.classesHeld) * 100 : null;
         return <article className="jt-card jt-record-subject" key={subject.id}>
           <div className="jt-record-subject-heading"><div><span className="jt-kicker">{subject.code} · {Number(subject.credits).toFixed(1)} CREDITS</span><h3>{subject.name}</h3></div><span className="jt-pill">Manual records</span></div>
+          <form className="jt-record-form jt-record-subject-edit" onSubmit={event => submitSubjectUpdate(event, subject)}>
+            <label>Course name<input name="name" maxLength={120} defaultValue={subject.name} required /></label>
+            <label>Credits<input name="credits" type="number" min="0.1" max="30" step="0.1" defaultValue={String(subject.credits)} required /></label>
+            <button className="jt-account-button" type="submit" disabled={busy}>Save subject details</button>
+          </form>
           <div className="jt-record-summary">
             <div><span>Latest grade point</span><strong>{grade ? Number(grade.gradePoint).toFixed(2) : 'Not entered'}</strong></div>
             <div><span>Latest attendance</span><strong>{percentage === null ? 'Not entered' : `${percentage.toFixed(1)}%`}</strong></div>
