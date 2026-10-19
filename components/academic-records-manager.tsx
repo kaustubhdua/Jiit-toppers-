@@ -149,7 +149,7 @@ export function AcademicRecordsManager() {
       link.href = url;
       link.download = `jiit-toppers-academic-records-${new Date().toISOString().slice(0, 10)}.json`;
       link.click();
-      URL.revokeObjectURL(url);
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       setMessage('A JSON export of your academic records was downloaded.');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Export failed.');
