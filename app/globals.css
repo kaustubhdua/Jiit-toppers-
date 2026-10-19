@@ -104,3 +104,18 @@
 .jt-record-message{padding:10px 12px;border-radius:9px;background:#e7f0e7;color:#285a35;font-size:13px}
 @media(max-width:760px){.jt-record-form{grid-template-columns:repeat(2,minmax(0,1fr))}.jt-record-subform{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.jt-record-form,.jt-record-subform{grid-template-columns:1fr}.jt-record-term-select{grid-template-columns:1fr}.jt-record-subject-heading{display:block}.jt-record-summary{grid-template-columns:1fr}}
+
+.jt-csv-import{margin:22px 0}
+.jt-csv-import>p{color:var(--muted);font-size:13px;line-height:1.6}
+.jt-csv-import-controls{grid-template-columns:repeat(2,minmax(0,1fr));margin:18px 0}
+.jt-csv-import-controls select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit}
+.jt-csv-format{margin:14px 0;color:var(--muted);font-size:12px;line-height:1.6}
+.jt-csv-format summary{cursor:pointer;color:var(--ink);font-weight:700}
+.jt-csv-preview{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.jt-csv-table-wrap{overflow-x:auto;margin:12px 0}
+.jt-csv-table-wrap table{width:100%;border-collapse:collapse;font-size:12px;text-align:left}
+.jt-csv-table-wrap th,.jt-csv-table-wrap td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.jt-csv-table-wrap th{color:var(--muted);font-size:11px}
+.jt-csv-preview small{display:block;margin:8px 0;color:var(--muted)}
+.jt-csv-preview .jt-primary{margin-top:12px}
+@media(max-width:520px){.jt-csv-import-controls{grid-template-columns:1fr}}
