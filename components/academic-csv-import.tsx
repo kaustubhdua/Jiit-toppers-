@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type ChangeEvent } from 'react';
-import { parseAcademicCsv } from '@/lib/academic/parse-csv.mjs';
+import { parseAcademicCsv } from '@/lib/academic/parse-csv';
 import type { AcademicCsvResult } from '@/lib/academic/parse-csv';
 
 type Preview = Extract<AcademicCsvResult, { ok: true }>;
