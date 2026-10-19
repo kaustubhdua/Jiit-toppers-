@@ -4,7 +4,7 @@
 
 JIIT Toppers brings academic discovery, study resources, exam preparation, campus information, career preparation and student collaboration into one coherent experience. It is designed to complement—not replace—the official JIIT student systems.
 
-> **Current status:** V3 foundation work. The website remains a foundation prototype. The Academics workspace includes local attendance and SGPA estimators, but there is no production database, authentication, JIIT student-record integration, or live campus service. Any sample or placeholder content must not be treated as official.
+> **Current status:** Foundation prototype, not production-ready. The current branch has local attendance/SGPA/CGPA planning tools, a browser-local study task list, and outbound links to PYQJIIT and the JIIT Web kiosk. It does not yet have working account authentication, server-side personal-record persistence, secure uploads, or a verified live JIIT student-record integration. The connected Supabase project is currently inactive. Never treat placeholders or calculations as official records.
 
 ## Product principles
 
@@ -13,20 +13,30 @@ JIIT Toppers brings academic discovery, study resources, exam preparation, campu
 - **Source-aware:** institutional facts should link to the originating JIIT notice or document and show when they were last checked.
 - **Privacy-conscious:** never expose private student records or credentials in public pages, logs or demo data.
 - **Complement existing systems:** do not imply access to attendance, grades, fees or other private records unless an authorised integration exists.
+- **Link-first reuse:** use existing archives such as PYQJIIT through their original source until the maintainer grants permission for a feed/API/import.
 
-## Planned workspaces
+## Workspace status
 
-| Workspace | Purpose | Current implementation |
+| Workspace | Current implementation | Status |
 | --- | --- | --- |
-| Home | Entry point and shortcuts | UI scaffold |
-| Academics | Programme, curriculum, courses and academic tools | UI scaffold plus local attendance and SGPA estimators |
-| Study Vault | Notes, PYQs, assignments, tutorials and labs | UI scaffold |
-| Exam Center | Schedules, preparation and past-paper history | UI scaffold |
-| Career | Recruiter information and student experiences | UI scaffold |
-| Campus | Sector 62 / Sector 128 information and utilities | UI scaffold |
-| Community | Discussions, teams, clubs and events | UI scaffold |
+| Home | Entry point and shortcuts | Prototype UI |
+| Academics | Attendance calculator/forecast, SGPA estimate and cumulative CGPA estimate from user inputs | Functional local calculators; no official records |
+| Study Vault | Source-aware links to PYQJIIT and the JIIT Web kiosk | Functional outbound links; no mirrored archive or uploads |
+| Exam Center | Study task creation, due dates, completion, filters and deletion | Functional browser-local planner; not synced to an account |
+| Career | Recruiter information and student experiences | Placeholder |
+| Campus | Sector 62 / Sector 128 information and utilities | Placeholder |
+| Community | Discussions, teams, clubs and events | Placeholder |
 
-See [the feature map](docs/FEATURE_MAP.md), [V3 foundation status](docs/V3_FOUNDATION.md), and [research and code audit](docs/RESEARCH_AND_CODE_AUDIT_2026-10-01.md) for the implementation plan, audit findings and acceptance criteria.
+The browser-local study planner stores tasks in the current browser only. Do not use it as a cloud backup or assume tasks follow you across devices.
+
+## Research and implementation docs
+
+- [Product and implementation framework](docs/PRODUCT_AND_IMPLEMENTATION_FRAMEWORK.md)
+- [Implementation audit and release blockers](docs/IMPLEMENTATION_AUDIT_2026-10-19.md)
+- [Feature map](docs/FEATURE_MAP.md)
+- [V3 foundation status](docs/V3_FOUNDATION.md)
+- [Research and code audit](docs/RESEARCH_AND_CODE_AUDIT_2026-10-01.md)
+- [Data model and service boundaries](docs/DATA_MODEL.md)
 
 ## Technology
 
@@ -34,9 +44,9 @@ See [the feature map](docs/FEATURE_MAP.md), [V3 foundation status](docs/V3_FOUND
 - TypeScript
 - CSS design system
 - Prisma schema targeting PostgreSQL
-- GitHub Actions for CI (unit tests, lint, typecheck, Prisma validation and build)
+- GitHub Actions for unit tests, lint, typecheck, Prisma validation and production build
 
-The application currently uses a lightweight client-side prototype. Database, authentication, storage, moderation and external integrations are future implementation work—not active services.
+The application currently uses a client-side prototype. Prisma schema and migrations are committed, but the inactive Supabase project prevents current live database verification. Authentication, ownership enforcement, private storage and server-backed academic workflows remain unimplemented.
 
 ## Local development
 
@@ -71,17 +81,17 @@ Do not upload private student information, credentials, copyrighted material wit
 
 ## Roadmap
 
-1. Modularise the prototype and establish quality gates
-2. Finalise the domain model and versioned database migrations
-3. Implement authentication, profiles and role-safe authorisation
-4. Build programme, branch, batch, curriculum and subject records
-5. Implement resource upload, storage, review and source attribution
-6. Add PYQs, exams, attendance and grade-planning tools
-7. Add campus and career directories with freshness/provenance
-8. Implement community workflows, moderation and notifications
-9. Add contextual search and JIIT Sathi only after source data is trustworthy
-10. Complete security, accessibility, performance and deployment verification
+1. Commit and use a reproducible package lock; keep CI green.
+2. Restore an approved database environment and verify migration history/schema alignment.
+3. Implement authentication, sessions, profiles and role-safe authorization.
+4. Build private, persisted academic records and safe CSV/XLSX/PDF import workflows.
+5. Validate academic calculations against current programme-specific rules.
+6. Add a permission-aware resource catalogue, PYQs, exam/timetable workflows and provenance.
+7. Add campus and career directories with freshness and moderation.
+8. Implement community workflows, abuse reporting and notifications.
+9. Add contextual search and JIIT Sathi only after source data is trustworthy.
+10. Complete security, accessibility, performance and deployment verification.
 
 ## Production readiness
 
-This repository should not be described as production-ready until the database and auth are configured, migrations are applied, access controls are tested, real integrations are verified, and CI/build checks pass in a clean environment.
+Do not describe this repository as production-ready until authentication and ownership controls are tested, the database is active and verified, migrations and policies are aligned, CI/build checks pass from a clean checkout, critical end-to-end flows work, and deployment smoke tests plus rollback/restore are verified.
