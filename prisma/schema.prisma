@@ -97,7 +97,12 @@ model User {
   placementExperiences PlacementExperience[]
   discussions        Discussion[]
   discussionReplies  DiscussionReply[]
-  auditEvents        AuditEvent[]           @relation("AuditActor")
+  auditEvents           AuditEvent[]           @relation("AuditActor")
+  academicTerms         AcademicTerm[]
+  studentSubjects       StudentSubject[]
+  gradeRecords          GradeRecord[]
+  attendanceSnapshots   AttendanceSnapshot[]
+  academicImports       AcademicImport[]
 
   @@index([campusId, branchId, admissionYear])
   @@index([role])
