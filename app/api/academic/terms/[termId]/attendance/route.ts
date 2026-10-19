@@ -65,6 +65,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       select: { id: true },
     });
     if (!subject) return jsonNoStore({ error: 'SUBJECT_NOT_FOUND' }, 404);
+    const snapshotCount = await prisma.attendanceSnapshot.count({ where: { userId: auth.user.id, termId } });
+    if (snapshotCount >= 1000) return jsonNoStore({ error: 'ATTENDANCE_HISTORY_LIMIT_REACHED' }, 429);
 
     const snapshot = await prisma.attendanceSnapshot.create({
       data: {
