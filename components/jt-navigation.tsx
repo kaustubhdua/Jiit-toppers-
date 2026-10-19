@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Search } from 'lucide-react';
-import type { AuthStatus } from '@/lib/supabase/server';
+import type { AuthStatus } from '@/lib/supabase/config';
 
 export type Section = 'home' | 'academics' | 'resources' | 'exams' | 'placements' | 'campus' | 'community';
 
