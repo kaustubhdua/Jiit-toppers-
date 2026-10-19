@@ -4,7 +4,7 @@
 
 JIIT Toppers brings academic discovery, study resources, exam preparation, campus information, career preparation and student collaboration into one coherent experience. It is designed to complement—not replace—the official JIIT student systems.
 
-> **Current status:** Foundation prototype, not production-ready. The current branch has local attendance/SGPA/CGPA planning tools, a browser-local study task list, and outbound links to PYQJIIT and the JIIT Web kiosk. It does not yet have working account authentication, server-side personal-record persistence, secure uploads, or a verified live JIIT student-record integration. The connected Supabase project is currently inactive. Never treat placeholders or calculations as official records.
+> **Current status:** Foundation prototype, not production-ready. The current branch has local attendance/SGPA/CGPA planning tools, a browser-local study task list, and outbound links to PYQJIIT and the JIIT Web kiosk. It now has a passwordless Supabase Auth setup flow, but the real sign-in round trip is unverified because the connected Supabase project is inactive. Server-side personal-record persistence, secure uploads, and a verified live JIIT student-record integration are still absent. The connected Supabase project is currently inactive. Never treat placeholders or calculations as official records.
 
 ## Product principles
 
@@ -32,6 +32,7 @@ The browser-local study planner stores tasks in the current browser only. Do not
 ## Research and implementation docs
 
 - [Product and implementation framework](docs/PRODUCT_AND_IMPLEMENTATION_FRAMEWORK.md)
+- [Authentication setup](docs/AUTH_SETUP.md)
 - [Implementation audit and release blockers](docs/IMPLEMENTATION_AUDIT_2026-10-19.md)
 - [Feature map](docs/FEATURE_MAP.md)
 - [V3 foundation status](docs/V3_FOUNDATION.md)
@@ -46,7 +47,7 @@ The browser-local study planner stores tasks in the current browser only. Do not
 - Prisma schema targeting PostgreSQL
 - GitHub Actions for unit tests, lint, typecheck, Prisma validation and production build
 
-The application currently uses a client-side prototype. Prisma schema and migrations are committed, but the inactive Supabase project prevents current live database verification. Authentication, ownership enforcement, private storage and server-backed academic workflows remain unimplemented.
+The application remains a client-side prototype for academic data. Supabase Auth scaffolding now supports passwordless email links, cookie-backed SSR sessions, callback validation and sign-out, but the inactive Supabase project prevents a real sign-in test. Authentication does not yet gate private data because no private-record API exists. Ownership enforcement, private storage and server-backed academic workflows remain unimplemented.
 
 ## Local development
 
