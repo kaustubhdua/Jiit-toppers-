@@ -23,7 +23,7 @@ export function JTNavigation({ section, query, authStatus, onNavigate, onQueryCh
     <label className="jt-search"><Search size={17} aria-hidden="true"/><input value={query} onChange={event => onQueryChange(event.target.value)} placeholder="Search JIIT" aria-label="Search JIIT Toppers"/></label>
     <div className="jt-account">
       {authStatus.reachable && authStatus.email
-        ? <form action="/auth/sign-out" method="post"><button className="jt-account-button" type="submit">Sign out</button></form>
+        ? <><Link className="jt-account-button" href="/account">Account</Link><form action="/auth/sign-out" method="post"><button className="jt-account-button" type="submit">Sign out</button></form></>
         : <Link className="jt-account-button" href="/sign-in">{authStatus.reachable ? 'Sign in' : authStatus.configured ? 'Sign-in status' : 'Set up sign-in'}</Link>}
     </div>
   </div></header>;
