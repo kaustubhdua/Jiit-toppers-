@@ -15,7 +15,7 @@ export type AppUserSummary = {
 
 export type CurrentAppUserResult =
   | { ok: true; user: AppUserSummary }
-  | { ok: false; status: 401 | 403 | 409 | 503; code: 'AUTH_REQUIRED' | 'VERIFIED_EMAIL_REQUIRED' | 'ACCOUNT_LINK_CONFLICT' | 'AUTH_NOT_CONFIGURED' | 'DATABASE_UNAVAILABLE' };
+  | { ok: false; status: 401 | 403 | 409 | 503; code: 'AUTH_REQUIRED' | 'VERIFIED_EMAIL_REQUIRED' | 'ACCOUNT_LINK_CONFLICT' | 'AUTH_NOT_CONFIGURED' | 'AUTH_UNAVAILABLE' | 'DATABASE_UNAVAILABLE' };
 
 export async function requireAppUser(): Promise<CurrentAppUserResult> {
   const supabase = await createClient();
@@ -26,11 +26,11 @@ export async function requireAppUser(): Promise<CurrentAppUserResult> {
     const { data, error } = await supabase.auth.getUser();
     if (error) {
       if (error.name === 'AuthSessionMissingError') return { ok: false, status: 401, code: 'AUTH_REQUIRED' };
-      return { ok: false, status: 503, code: 'DATABASE_UNAVAILABLE' };
+      return { ok: false, status: 503, code: 'AUTH_UNAVAILABLE' };
     }
     authUser = data.user;
   } catch {
-    return { ok: false, status: 503, code: 'DATABASE_UNAVAILABLE' };
+    return { ok: false, status: 503, code: 'AUTH_UNAVAILABLE' };
   }
 
   if (!authUser) return { ok: false, status: 401, code: 'AUTH_REQUIRED' };
