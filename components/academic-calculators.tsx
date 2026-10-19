@@ -18,17 +18,21 @@ export function AcademicCalculators() {
   const [cumulativeCredits, setCumulativeCredits] = useState('');
   const [cumulativeGrades, setCumulativeGrades] = useState('');
 
-  const counts = {
-    held: held.trim() === '' ? Number.NaN : Number(held),
-    attended: attended.trim() === '' ? Number.NaN : Number(attended),
-    target: target.trim() === '' ? Number.NaN : Number(target),
-  };
   const attendance = useMemo(
-    () => calculateAttendance(counts),
+    () => calculateAttendance({
+      held: held.trim() === '' ? Number.NaN : Number(held),
+      attended: attended.trim() === '' ? Number.NaN : Number(attended),
+      target: target.trim() === '' ? Number.NaN : Number(target),
+    }),
     [held, attended, target],
   );
   const forecast = useMemo(
-    () => calculateAttendanceForecast({ ...counts, futureClasses: futureClasses.trim() === '' ? Number.NaN : Number(futureClasses) }),
+    () => calculateAttendanceForecast({
+      held: held.trim() === '' ? Number.NaN : Number(held),
+      attended: attended.trim() === '' ? Number.NaN : Number(attended),
+      target: target.trim() === '' ? Number.NaN : Number(target),
+      futureClasses: futureClasses.trim() === '' ? Number.NaN : Number(futureClasses),
+    }),
     [held, attended, target, futureClasses],
   );
   const parsedSemesterCredits = useMemo(() => parseNumbers(semesterCredits), [semesterCredits]);
