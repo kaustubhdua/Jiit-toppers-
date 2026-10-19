@@ -61,6 +61,8 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return jsonNoStore({ error: 'INVALID_TERM' }, 400);
 
   try {
+    const termCount = await prisma.academicTerm.count({ where: { userId: auth.user.id } });
+    if (termCount >= 30) return jsonNoStore({ error: 'TERM_LIMIT_REACHED' }, 429);
     const term = await prisma.academicTerm.create({ data: { ...parsed.data, userId: auth.user.id } });
     return jsonNoStore({ term }, 201);
   } catch (error) {
