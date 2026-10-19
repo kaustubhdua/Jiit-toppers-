@@ -117,6 +117,40 @@ export function AcademicRecordsManager() {
     } finally { setBusy(false); }
   }
 
+  async function exportRecords() {
+    setBusy(true); setMessage(''); setError('');
+    try {
+      const response = await fetch('/api/academic/terms', { cache: 'no-store' });
+      const data = await response.json();
+      if (!response.ok) throw new Error('Your records could not be exported right now.');
+      const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), terms: data.terms }, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `jiit-toppers-academic-records-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setMessage('A JSON export of your academic records was downloaded.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Export failed.');
+    } finally { setBusy(false); }
+  }
+
+  async function deleteSelectedTerm() {
+    if (!selectedTerm || !window.confirm(`Delete ${selectedTerm.label} and all its subjects, grade records, attendance history and import metadata? This cannot be undone.`)) return;
+    setBusy(true); setMessage(''); setError('');
+    try {
+      const response = await fetch(`/api/academic/terms/${selectedTerm.id}`, { method: 'DELETE', cache: 'no-store' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error === 'STORAGE_CLEANUP_REQUIRED' ? 'This term has stored documents that need secure cleanup before deletion.' : 'The selected term could not be deleted.');
+      setSelectedTermId('');
+      await loadTerms();
+      setMessage(`${selectedTerm.label} and its academic records were deleted.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Delete failed.');
+    } finally { setBusy(false); }
+  }
+
   async function submitAttendance(event: FormEvent<HTMLFormElement>, subject: Subject) {
     event.preventDefault();
     if (!selectedTerm) return;
@@ -161,12 +195,18 @@ export function AcademicRecordsManager() {
       </form>
     </article>
 
-    {terms.length > 0 && <div className="jt-record-term-select">
-      <label htmlFor="academic-term-select">Selected term</label>
-      <select id="academic-term-select" value={selectedTerm?.id ?? ''} onChange={event => setSelectedTermId(event.target.value)}>
-        {terms.map(term => <option key={term.id} value={term.id}>{term.label} · {term.academicYear} · Semester {term.semesterNumber}</option>)}
-      </select>
-    </div>}
+    {terms.length > 0 && <>
+      <div className="jt-record-term-select">
+        <label htmlFor="academic-term-select">Selected term</label>
+        <select id="academic-term-select" value={selectedTerm?.id ?? ''} onChange={event => setSelectedTermId(event.target.value)}>
+          {terms.map(term => <option key={term.id} value={term.id}>{term.label} · {term.academicYear} · Semester {term.semesterNumber}</option>)}
+        </select>
+      </div>
+      <div className="jt-record-actions">
+        <button className="jt-account-button" type="button" onClick={exportRecords} disabled={busy}>Export all records (JSON)</button>
+        {selectedTerm && <button className="jt-danger" type="button" onClick={deleteSelectedTerm} disabled={busy}>Delete selected term</button>}
+      </div>
+    </>}
 
     {selectedTerm && <article className="jt-card jt-record-form-card">
       <h3>Add a subject to {selectedTerm.label}</h3>
@@ -212,6 +252,6 @@ export function AcademicRecordsManager() {
         </article>;
       })}
     </div>}
-    <p className="jt-planner-notice">No JIIT portal connection or document upload is active. Do not treat these entries as official records. Deletion/export controls and import workflows are still being built.</p>
+    <p className="jt-planner-notice">No JIIT portal connection or document upload is active. Do not treat these entries as official records. XLSX/PDF imports and secure raw-document storage are not available.</p>
   </section>;
 }
