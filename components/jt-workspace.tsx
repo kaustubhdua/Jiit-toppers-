@@ -3,6 +3,7 @@ import type { Section } from './jt-navigation';
 import { AcademicCalculators } from './academic-calculators';
 import { PyqDiscovery } from './pyq-discovery';
 import { StudyPlanner } from './study-planner';
+import { ExamSchedulePlanner } from './exam-schedule-planner';
 
 type WorkspaceSection = Exclude<Section, 'home'>;
 type WorkspaceCard = { title: string; body: string; icon: LucideIcon };
@@ -26,6 +27,7 @@ export function JTWorkspace({ section, query }: { section: WorkspaceSection; que
     {section === 'academics' && <AcademicCalculators />}
     {section === 'resources' && <PyqDiscovery />}
     {section === 'exams' && <StudyPlanner />}
+    {section === 'exams' && <ExamSchedulePlanner />}
     {section !== 'resources' && <p className="jt-lead" style={{fontSize:13,marginTop:24}}>This workspace is still being built. Do not treat its placeholder cards as live JIIT services or official records.</p>}
   </section>;
 }

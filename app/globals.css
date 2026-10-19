@@ -137,3 +137,27 @@
 .jt-import-history span,.jt-import-history small{color:var(--muted);font-size:11px;line-height:1.5}
 .jt-import-history button{flex-shrink:0}
 @media(max-width:520px){.jt-import-history li{align-items:flex-start;flex-direction:column}.jt-import-history button{width:100%}}
+
+
+.jt-exam-planner{margin:28px 0}
+.jt-exam-planner h2{font:700 clamp(24px,4vw,34px) 'Space Grotesk';letter-spacing:-.035em;margin:8px 0}
+.jt-exam-planner>p{color:var(--muted);font-size:13px;line-height:1.65}
+.jt-exam-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end;margin:18px 0;padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.jt-exam-form label{display:grid;gap:7px;min-width:0;font-size:12px;font-weight:700;color:var(--muted)}
+.jt-exam-form input{width:100%;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-weight:400}
+.jt-exam-form .jt-exam-source{grid-column:span 2}
+.jt-exam-form .jt-primary{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.jt-exam-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0}
+.jt-exam-toolbar .jt-task-toolbar{margin:0}
+.jt-exam-toolbar .jt-account-button{display:inline-flex;align-items:center;gap:7px}
+.jt-exam-list{list-style:none;padding:0;margin:16px 0;display:grid;gap:10px}
+.jt-exam-list li{display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;gap:14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.jt-exam-date{display:grid;justify-items:center;gap:2px;padding:9px 4px;border-radius:9px;background:#f0ece3}
+.jt-exam-date strong{font:700 24px 'Space Grotesk'}
+.jt-exam-date span{font-size:10px;color:var(--muted);text-align:center}
+.jt-exam-copy{display:grid;gap:5px;min-width:0}
+.jt-exam-copy>strong{font-size:14px;overflow-wrap:anywhere}
+.jt-exam-copy>span,.jt-exam-copy>a{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.jt-exam-copy>a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+@media(max-width:760px){.jt-exam-form{grid-template-columns:repeat(2,minmax(0,1fr))}.jt-exam-form .jt-exam-source{grid-column:1/-1}}
+@media(max-width:520px){.jt-exam-form{grid-template-columns:1fr}.jt-exam-form .jt-exam-source{grid-column:auto}.jt-exam-toolbar{align-items:stretch;flex-direction:column}.jt-exam-list li{grid-template-columns:54px minmax(0,1fr) auto;gap:9px;padding:10px}}
