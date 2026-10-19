@@ -28,8 +28,8 @@ These changes are **not** a claim that the overall project is finished.
 |---|---|---|
 | Home/navigation | UI works as a client-side prototype; navigation is local state, not deep-link routing | URL state/history, responsive and accessibility verification |
 | Academic calculators | Local attendance and SGPA existed; branch adds attendance forecasting and cumulative GPA calculation | Verify calculations against current programme policy; automated tests must pass |
-| CGPA/grade history | Owner-scoped grade API, manual grade entry and CSV grade import implemented; live database unavailable | Verify live persistence, add correction/export/deletion and validate official grading policy |
-| Attendance records | Owner-scoped snapshots API, manual entry and CSV attendance import implemented; live database unavailable | Verify live persistence and history; add export/deletion and policy/source verification |
+| CGPA/grade history | Owner-scoped grade API, manual grade entry and CSV grade import implemented; live database unavailable | Verify live persistence and official grading policy; JSON export and term deletion are implemented, but per-record deletion still needs review |
+| Attendance records | Owner-scoped snapshots API, manual entry and CSV attendance import implemented; live database unavailable | Verify live persistence and history; JSON export and term deletion are implemented, but per-snapshot deletion and policy/source verification remain |
 | Study Vault | Workspace scaffold; branch adds outbound PYQJIIT and Web kiosk source cards | Approved resource catalogue, permissions, metadata, moderation and search |
 | PYQs | External archive link only; no archive copying or API integration | Maintainer permission/API/terms review before import or mirroring |
 | Timetable/exams | Placeholder cards | Verified source or user import, preview, timezone and stale-data handling |
@@ -58,7 +58,7 @@ These changes are **not** a claim that the overall project is finished.
 ## P1 product work
 
 - Programme/branch/batch profile and current curriculum mapping.
-- XLSX/PDF imports with preview, parser isolation, correction and deletion/export.
+- XLSX/PDF imports with preview and parser isolation; account deletion and private-file cleanup.
 - SGPA/CGPA breakdown and what-if planning from persisted grade history, with current policy validation.
 - Attendance class-level history where supported by source data, plus export/deletion.
 - Resource/PYQ metadata, search, viewer, bookmarks and review/takedown process.
@@ -109,7 +109,7 @@ These changes are **not** a claim that the overall project is finished.
 - [ ] Cross-user read/write/delete/download tests pass.
 - [ ] Migrations have been applied and verified in a disposable/staging database.
 - [ ] Data API/RLS and private-storage policies are verified against the real project.
-- [ ] Imports have safe file handling, preview, ownership, audit trail and deletion.
+- [ ] CSV imports are bounded, previewed, owner-scoped and transactional; verify live behavior, add account deletion and private-file cleanup before enabling raw uploads.
 - [ ] Academic calculations are checked against current policy and their assumptions are visible.
 - [ ] All workspace screens are classified as working, intentionally deferred or removed—not falsely presented as live services.
 - [ ] Mobile/accessibility/performance checks pass.
