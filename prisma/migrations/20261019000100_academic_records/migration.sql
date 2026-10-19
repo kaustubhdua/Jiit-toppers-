@@ -109,7 +109,7 @@ CREATE UNIQUE INDEX "AcademicTerm_userId_academicYear_semesterNumber_key" ON "Ac
 CREATE INDEX "AcademicTerm_userId_academicYear_idx" ON "AcademicTerm"("userId", "academicYear");
 CREATE UNIQUE INDEX "StudentSubject_termId_code_key" ON "StudentSubject"("termId", "code");
 CREATE INDEX "StudentSubject_userId_termId_idx" ON "StudentSubject"("userId", "termId");
-CREATE UNIQUE INDEX "AcademicImport_userId_checksum_key" ON "AcademicImport"("userId", "checksum");
+CREATE UNIQUE INDEX "AcademicImport_userId_termId_kind_checksum_key" ON "AcademicImport"("userId", "termId", "kind", "checksum");
 CREATE INDEX "AcademicImport_userId_createdAt_idx" ON "AcademicImport"("userId", "createdAt");
 CREATE INDEX "AcademicImport_userId_status_idx" ON "AcademicImport"("userId", "status");
 CREATE UNIQUE INDEX "GradeRecord_userId_termId_studentSubjectId_key" ON "GradeRecord"("userId", "termId", "studentSubjectId");
