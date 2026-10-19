@@ -4,7 +4,7 @@
 
 JIIT Toppers brings academic discovery, study resources, exam preparation, campus information, career preparation and student collaboration into one coherent experience. It is designed to complement—not replace—the official JIIT student systems.
 
-> **Current status:** Foundation prototype, not production-ready. The current branch has local attendance/SGPA/CGPA planning tools, a browser-local study task list, and outbound links to PYQJIIT and the JIIT Web kiosk. It now has a passwordless Supabase Auth flow, account profile API, owner-scoped academic term/subject/grade/attendance APIs, and a browser-parsed CSV import flow. These workflows are implemented in code, including bounded request-body handling and subject/grade/attendance deletion, but have not been verified against a live database because the connected Supabase project is inactive. Secure private file storage, account deletion, and a verified live JIIT student-record integration are still absent. The connected Supabase project is currently inactive. Never treat placeholders or calculations as official records.
+> **Current status:** Foundation prototype, not production-ready. The current branch has local attendance/SGPA/CGPA planning tools, a browser-local study task list, and outbound links to PYQJIIT and the JIIT Web kiosk. It now has a passwordless Supabase Auth flow, account profile API, owner-scoped academic term/subject/grade/attendance APIs, and a browser-parsed CSV import flow. These workflows are implemented in code, including bounded request-body handling and subject/grade/attendance deletion, but have not been verified against a live database because the connected Supabase project is inactive. Secure private file storage, account deletion, and a verified live JIIT student-record integration are still absent. Never treat placeholders or calculations as official records.
 
 ## Product principles
 
@@ -32,6 +32,7 @@ The browser-local study planner stores tasks in the current browser only. Do not
 ## Research and implementation docs
 
 - [Product and implementation framework](docs/PRODUCT_AND_IMPLEMENTATION_FRAMEWORK.md)
+- [PYQJIIT integration research and delivery plan](docs/PYQJIIT_INTEGRATION_RESEARCH.md)
 - [Authentication setup](docs/AUTH_SETUP.md)
 - [Implementation audit and release blockers](docs/IMPLEMENTATION_AUDIT_2026-10-19.md)
 - [Feature map](docs/FEATURE_MAP.md)
@@ -88,11 +89,12 @@ Do not upload private student information, credentials, copyrighted material wit
 4. Verify owner-scoped academic terms, subjects, grade records, attendance snapshots and transactional CSV imports against the active database.
 5. Add account deletion, safe document storage and XLSX/PDF imports; verify the current JSON export and term-deletion controls.
 6. Validate academic calculations against current programme-specific rules.
-7. Add a permission-aware resource catalogue, PYQs, exam/timetable workflows and provenance.
-8. Add campus and career directories with freshness and moderation.
-9. Implement community workflows, abuse reporting and notifications.
-10. Add contextual search and JIIT Sathi only after source data is trustworthy.
-11. Complete security, accessibility, performance and deployment verification.
+7. Complete the PYQJIIT link-first integration; contact the maintainer before implementing an API/feed or any mirroring. See [the integration plan](docs/PYQJIIT_INTEGRATION_RESEARCH.md).
+8. Add a permission-aware resource catalogue, exam/timetable workflows and provenance.
+9. Add campus and career directories with freshness and moderation.
+10. Implement community workflows, abuse reporting and notifications.
+11. Add contextual search and JIIT Sathi only after source data is trustworthy.
+12. Complete security, accessibility, performance and deployment verification.
 
 ## Production readiness
 
