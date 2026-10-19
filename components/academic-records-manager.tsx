@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { AcademicCsvImport } from './academic-csv-import';
 
 type Grade = { gradePoint: string | number; letterGrade: string | null; marksObtained: string | number | null; maxMarks: string | number | null; source: string; observedAt: string };
 type AttendanceSnapshot = { classesHeld: number; classesAttended: number; targetPercent: string | number; source: string; observedAt: string };
@@ -176,6 +177,8 @@ export function AcademicRecordsManager() {
         <button className="jt-primary" type="submit" disabled={busy}>Add subject</button>
       </form>
     </article>}
+
+    {selectedTerm && <AcademicCsvImport termId={selectedTerm.id} onImported={loadTerms}/>}
 
     {selectedTerm && selectedTerm.subjects.length === 0 && <div className="jt-task-empty"><strong>No subjects in this term yet.</strong><span>Add a subject above to start recording grades and attendance.</span></div>}
     {selectedTerm && selectedTerm.subjects.length > 0 && <div className="jt-record-subjects">
