@@ -173,7 +173,7 @@ model AcademicImport {
   gradeRecords        GradeRecord[]
   attendanceSnapshots AttendanceSnapshot[]
 
-  @@unique([userId, checksum])
+  @@unique([userId, termId, kind, checksum])
   @@index([userId, createdAt])
   @@index([userId, status])
 }
