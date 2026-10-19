@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, useSyncExternalStore, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore, type FormEvent } from 'react';
 import { CalendarDays, Download, Plus, Trash2 } from 'lucide-react';
 import { buildExamCalendar } from '@/lib/academic/exam-calendar.mjs';
 
@@ -94,6 +94,7 @@ export function ExamSchedulePlanner() {
   const [filter, setFilter] = useState<'upcoming' | 'all' | 'past'>('upcoming');
   const [error, setError] = useState('');
   const [storageWarning, setStorageWarning] = useState(false);
+  const [now, setNow] = useState(0);
   const events = sessionEvents ?? storedEvents;
 
   function commitEvents(nextEvents: ExamEvent[]) {
@@ -176,7 +177,12 @@ export function ExamSchedulePlanner() {
     }
   }
 
-  const now = Date.now();
+  useEffect(() => {
+    const initialTick = window.setTimeout(() => setNow(Date.now()), 0);
+    const interval = window.setInterval(() => setNow(Date.now()), 60_000);
+    return () => { window.clearTimeout(initialTick); window.clearInterval(interval); };
+  }, []);
+
   const visibleEvents = events
     .filter(event => filter === 'all' || (filter === 'upcoming' ? new Date(event.startsAt).getTime() >= now : new Date(event.startsAt).getTime() < now))
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
