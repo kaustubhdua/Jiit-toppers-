@@ -1,4 +1,5 @@
 export type SupabaseConfig = { url: string; publishableKey: string };
+export type AuthStatus = { configured: boolean; reachable: boolean; email: string | null };
 
 export function getSupabaseConfig(): SupabaseConfig | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
