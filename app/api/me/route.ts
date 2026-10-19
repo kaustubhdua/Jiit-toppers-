@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { requireAppUser } from '@/lib/auth/current-user';
 import { prisma } from '@/lib/prisma';
+import { readJsonBounded } from '@/lib/http/read-json-bounded';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -29,12 +30,14 @@ export async function PATCH(request: NextRequest) {
   const result = await requireAppUser();
   if (!result.ok) return jsonNoStore({ error: result.code }, result.status);
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonNoStore({ error: 'INVALID_JSON' }, 400);
+  const boundedBody = await readJsonBounded(request, 32_000);
+  if (!boundedBody.ok) {
+    return jsonNoStore(
+      { error: boundedBody.reason === 'TOO_LARGE' ? 'REQUEST_TOO_LARGE' : 'INVALID_JSON' },
+      boundedBody.reason === 'TOO_LARGE' ? 413 : 400,
+    );
   }
+  const body: unknown = boundedBody.value;
 
   const parsed = profileUpdateSchema.safeParse(body);
   if (!parsed.success) return jsonNoStore({ error: 'INVALID_PROFILE' }, 400);
