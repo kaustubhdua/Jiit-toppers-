@@ -27,6 +27,7 @@ const kindLabel: Record<ImportRecord['kind'], string> = {
 export function AcademicImportHistory({ termId, onDeleted }: { termId: string; onDeleted: () => Promise<void> }) {
   const [imports, setImports] = useState<ImportRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadedTermId, setLoadedTermId] = useState('');
   const [busyId, setBusyId] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -40,15 +41,17 @@ export function AcademicImportHistory({ termId, onDeleted }: { termId: string; o
 
   useEffect(() => {
     let active = true;
-    setLoading(true);
-    setError('');
     fetch(`/api/academic/terms/${termId}/imports`, { cache: 'no-store' })
       .then(async response => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error ?? 'Import history is unavailable.');
-        if (active) setImports(data.imports as ImportRecord[]);
+        if (active) {
+          setImports(data.imports as ImportRecord[]);
+          setError('');
+          setLoadedTermId(termId);
+        }
       })
-      .catch(() => { if (active) setError('Import history could not be loaded. The database may be unavailable.'); })
+      .catch(() => { if (active) { setError('Import history could not be loaded. The database may be unavailable.'); setLoadedTermId(termId); } })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [termId]);
@@ -80,13 +83,15 @@ export function AcademicImportHistory({ termId, onDeleted }: { termId: string; o
     }
   }
 
+  const isLoading = loading || loadedTermId !== termId;
+
   return <section className="jt-card jt-record-form-card" aria-labelledby="jt-import-history-title">
     <h3 id="jt-import-history-title">Import history</h3>
     <p>Review the CSV imports associated with this term. Deleting an import also removes records currently linked to that import; no uploaded raw file is stored by this CSV flow.</p>
-    {loading && <p role="status">Loading import history…</p>}
+    {isLoading && <p role="status">Loading import history…</p>}
     {error && <p className="jt-record-error" role="alert">{error}</p>}
     {message && <p className="jt-record-message" role="status">{message}</p>}
-    {!loading && imports.length === 0 && !error && <p>No imports recorded for this term yet.</p>}
+    {!isLoading && imports.length === 0 && !error && <p>No imports recorded for this term yet.</p>}
     {imports.length > 0 && <ul className="jt-import-history">
       {imports.map(record => <li key={record.id}>
         <div>
