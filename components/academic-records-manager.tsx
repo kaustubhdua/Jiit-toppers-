@@ -58,7 +58,7 @@ export function AcademicRecordsManager() {
         cache: 'no-store',
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error === 'TERM_ALREADY_EXISTS' ? 'That academic year and semester already exist.' : 'Could not create this term. Check the fields and try again.');
+      if (!response.ok) throw new Error(data.error === 'TERM_ALREADY_EXISTS' ? 'That academic year and semester already exist.' : data.error === 'TERM_LIMIT_REACHED' ? 'This account has reached the 30-term limit.' : 'Could not create this term. Check the fields and try again.');
       setTermLabel('');
       setSelectedTermId(data.term.id);
       await loadTerms();
@@ -80,7 +80,7 @@ export function AcademicRecordsManager() {
         cache: 'no-store',
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error === 'SUBJECT_ALREADY_EXISTS' ? 'This course code already exists in the selected term.' : 'Could not add the subject. Check the fields and try again.');
+      if (!response.ok) throw new Error(data.error === 'SUBJECT_ALREADY_EXISTS' ? 'This course code already exists in the selected term.' : data.error === 'SUBJECT_LIMIT_REACHED' ? 'This term has reached the 50-subject limit.' : 'Could not add the subject. Check the fields and try again.');
       setSubjectCode(''); setSubjectName('');
       await loadTerms();
       setMessage('Subject added. You can now add your own grade and attendance values.');
@@ -135,7 +135,7 @@ export function AcademicRecordsManager() {
         cache: 'no-store',
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error === 'INVALID_ATTENDANCE' ? 'Attended classes cannot exceed classes held.' : 'Attendance was not saved. Check the values and try again.');
+      if (!response.ok) throw new Error(data.error === 'INVALID_ATTENDANCE' ? 'Attended classes cannot exceed classes held.' : data.error === 'ATTENDANCE_HISTORY_LIMIT_REACHED' ? 'This term has reached the attendance history limit.' : 'Attendance was not saved. Check the values and try again.');
       await loadTerms();
       setMessage(`Attendance snapshot saved for ${subject.code}.`);
     } catch (err) {
