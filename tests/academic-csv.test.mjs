@@ -42,6 +42,11 @@ test('rejects columns that do not match the selected import type', () => {
   assert.equal(parseAcademicCsv('code,name,credits,classes_held,classes_attended,grade_point\\nCS101,Algorithms,3,10,9,8', 'ATTENDANCE').ok, false);
 });
 
+test('rejects control characters in names and invalid grade labels', () => {
+  assert.equal(parseAcademicCsv('code,name,credits,grade_point\\nCS101,"Bad\\nName",3,8', 'GRADE_CARD').ok, false);
+  assert.equal(parseAcademicCsv('code,name,credits,grade_point,letter_grade\\nCS101,Algorithms,3,8,A!', 'GRADE_CARD').ok, false);
+});
+
 test('requires both marks fields or neither', () => {
   assert.equal(parseAcademicCsv('code,name,credits,grade_point,marks_obtained\nCS101,Algorithms,3,8,40', 'GRADE_CARD').ok, false);
 });
