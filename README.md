@@ -20,7 +20,7 @@ JIIT Toppers brings academic discovery, study resources, exam preparation, campu
 | Workspace | Current implementation | Status |
 | --- | --- | --- |
 | Home | Entry point and shortcuts | Prototype UI |
-| Academics | Local calculators plus account-scoped terms, subjects, grade records, attendance snapshots, CSV imports, JSON export and owner-controlled deletion APIs/UI | Code implemented; live persistence blocked by inactive database |
+| Academics | Local calculators plus account-scoped terms, subjects, grade records, attendance snapshots, CSV imports with history and deletion, JSON export and owner-controlled deletion APIs/UI | Code implemented; live persistence blocked by inactive database |
 | Study Vault | Source-aware links to PYQJIIT and the JIIT Web kiosk | Functional outbound links; no mirrored archive or uploads |
 | Exam Center | Study task creation, due dates, completion, filters and deletion | Functional browser-local planner; not synced to an account |
 | Career | Recruiter information and student experiences | Placeholder |
@@ -86,7 +86,7 @@ Do not upload private student information, credentials, copyrighted material wit
 2. Restore an approved database environment and verify migration history/schema alignment.
 3. Verify passwordless authentication and account profile workflows against the active database.
 4. Verify owner-scoped academic terms, subjects, grade records, attendance snapshots and transactional CSV imports against the active database.
-5. Add account deletion, import-history management, safe document storage and XLSX/PDF imports; verify the current JSON export and term-deletion controls.
+5. Add account deletion, safe document storage and XLSX/PDF imports; verify the current JSON export and term-deletion controls.
 6. Validate academic calculations against current programme-specific rules.
 7. Add a permission-aware resource catalogue, PYQs, exam/timetable workflows and provenance.
 8. Add campus and career directories with freshness and moderation.
