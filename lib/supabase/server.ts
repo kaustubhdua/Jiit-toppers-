@@ -30,6 +30,12 @@ export async function getAuthStatus(): Promise<AuthStatus> {
   try {
     const supabase = await createClient();
     if (!supabase) return { configured: false, reachable: false, email: null };
+
+    // A missing session is a normal signed-out state. Only call the Auth API
+    // to verify an identity when a cookie-backed session actually exists.
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) return { configured: true, reachable: true, email: null };
+
     const { data, error } = await supabase.auth.getUser();
     if (error) return { configured: true, reachable: false, email: null };
     return { configured: true, reachable: true, email: data.user?.email ?? null };
