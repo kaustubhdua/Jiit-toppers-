@@ -24,3 +24,29 @@
 .jt-source-footer .jt-link-button svg{margin:0}
 .jt-source-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:16px}
 @media(max-width:700px){.jt-source-heading{display:block}.jt-source-heading>p{margin-top:12px}}
+
+/* Browser-local study planner */
+.jt-study-planner{margin-top:42px;padding-top:34px;border-top:1px solid var(--line)}
+.jt-planner-notice{border-left:3px solid var(--accent);padding:10px 14px;background:#f0ece3;color:var(--muted);font-size:13px;line-height:1.6}
+.jt-task-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(170px,.45fr) auto;gap:12px;align-items:end;margin:22px 0}
+.jt-task-form label{display:grid;gap:7px;color:var(--muted);font-size:12px;font-weight:700}
+.jt-task-form input{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-weight:400}
+.jt-task-form .jt-primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.jt-task-form .jt-primary svg{margin:0}
+.jt-task-toolbar{display:flex;gap:7px;margin:20px 0}
+.jt-task-toolbar button{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);cursor:pointer}
+.jt-task-toolbar button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.jt-task-empty{display:flex;flex-direction:column;gap:6px;padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}
+.jt-task-empty strong{color:var(--ink)}
+.jt-task-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.jt-task-list li{display:flex;align-items:center;gap:13px;padding:15px 4px;border-bottom:1px solid var(--line)}
+.jt-task-toggle,.jt-task-delete{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);cursor:pointer}
+.jt-task-toggle svg,.jt-task-delete svg{margin:0}
+.jt-task-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.jt-task-copy strong{overflow-wrap:anywhere}
+.jt-task-copy span{color:var(--muted);font-size:12px}
+.jt-task-list li.completed .jt-task-copy strong{text-decoration:line-through;color:var(--muted)}
+.jt-task-delete{color:#8b4137}
+.jt-clear-tasks{margin-top:14px;border:0;background:transparent;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px 0}
+.jt-storage-warning{color:#8b4137;font-size:13px}
+@media(max-width:650px){.jt-task-form{grid-template-columns:1fr}.jt-task-form .jt-primary{width:100%}}
