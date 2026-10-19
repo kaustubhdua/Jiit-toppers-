@@ -17,7 +17,7 @@ export default async function AccountPage() {
         ? <div className="jt-auth-state" role="status"><strong>Account storage is unavailable</strong><p>Your sign-in may be valid, but the application database is not ready. No profile changes were saved. Please try again later.</p></div>
         : <>
           <p className="jt-lead">Signed in as <strong>{result.user.email}</strong>.</p>
-          <ProfileForm initialName={result.user.name}/><p><a className="jt-auth-back" href="/account/academics">Manage academic terms, grades and attendance →</a></p>
+          <ProfileForm initialName={result.user.name}/><p><Link className="jt-auth-back" href="/account/academics">Manage academic terms, grades and attendance →</Link></p>
           <div className="jt-auth-state"><strong>Academic records are not connected yet</strong><p>This account profile is private, but grades, attendance and other academic records are not yet stored by JIIT Toppers. Do not upload sensitive documents until secure import and deletion workflows are available.</p></div>
         </>}
       <Link className="jt-auth-back" href="/">← Back to JIIT Toppers</Link>
