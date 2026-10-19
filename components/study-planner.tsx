@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useMemo, useState, useSyncExternalStore, type FormEvent } from 'react';
 import { Check, Circle, Plus, Trash2 } from 'lucide-react';
 
 type StudyTask = {
@@ -12,6 +12,7 @@ type StudyTask = {
 };
 
 const STORAGE_KEY = 'jiit-toppers:study-tasks:v1';
+const STORAGE_EVENT = 'jiit-toppers:study-tasks-changed';
 const MAX_TASKS = 100;
 
 function isStudyTask(value: unknown): value is StudyTask {
@@ -25,11 +26,9 @@ function isStudyTask(value: unknown): value is StudyTask {
     && typeof task.createdAt === 'string';
 }
 
-function loadTasks(): StudyTask[] {
+function parseTasks(snapshot: string): StudyTask[] {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed: unknown = JSON.parse(raw);
+    const parsed: unknown = JSON.parse(snapshot);
     if (!Array.isArray(parsed)) return [];
     return parsed.filter(isStudyTask).slice(0, MAX_TASKS);
   } catch {
@@ -37,28 +36,57 @@ function loadTasks(): StudyTask[] {
   }
 }
 
+function getTasksSnapshot(): string {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) ?? '[]';
+  } catch {
+    return '[]';
+  }
+}
+
+function getServerTasksSnapshot(): string {
+  return '[]';
+}
+
+function subscribeToTasks(callback: () => void) {
+  window.addEventListener('storage', callback);
+  window.addEventListener(STORAGE_EVENT, callback);
+  return () => {
+    window.removeEventListener('storage', callback);
+    window.removeEventListener(STORAGE_EVENT, callback);
+  };
+}
+
+function saveTasks(nextTasks: StudyTask[]): boolean {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextTasks));
+    window.dispatchEvent(new Event(STORAGE_EVENT));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function StudyPlanner() {
-  const [tasks, setTasks] = useState<StudyTask[]>([]);
+  const snapshot = useSyncExternalStore(subscribeToTasks, getTasksSnapshot, getServerTasksSnapshot);
+  const storedTasks = useMemo(() => parseTasks(snapshot), [snapshot]);
+  const [sessionTasks, setSessionTasks] = useState<StudyTask[] | null>(null);
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [filter, setFilter] = useState<'all' | 'open' | 'done'>('open');
-  const [loaded, setLoaded] = useState(false);
   const [storageWarning, setStorageWarning] = useState(false);
+  const tasks = sessionTasks ?? storedTasks;
 
-  useEffect(() => {
-    setTasks(loadTasks());
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  function commitTasks(nextTasks: StudyTask[]) {
+    if (saveTasks(nextTasks)) {
+      setSessionTasks(null);
       setStorageWarning(false);
-    } catch {
+    } else {
+      // Keep the planner usable for this tab if browser storage is unavailable.
+      setSessionTasks(nextTasks);
       setStorageWarning(true);
     }
-  }, [loaded, tasks]);
+  }
 
   function addTask(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,17 +99,17 @@ export function StudyPlanner() {
       completed: false,
       createdAt: new Date().toISOString(),
     };
-    setTasks(current => [task, ...current].slice(0, MAX_TASKS));
+    commitTasks([task, ...tasks].slice(0, MAX_TASKS));
     setTitle('');
     setDueDate('');
   }
 
   function toggleTask(id: string) {
-    setTasks(current => current.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
+    commitTasks(tasks.map(task => task.id === id ? { ...task, completed: !task.completed } : task));
   }
 
   function deleteTask(id: string) {
-    setTasks(current => current.filter(task => task.id !== id));
+    commitTasks(tasks.filter(task => task.id !== id));
   }
 
   const visibleTasks = tasks.filter(task => filter === 'all' || (filter === 'open' ? !task.completed : task.completed));
@@ -98,7 +126,7 @@ export function StudyPlanner() {
       <label>Due date (optional)<input type="date" value={dueDate} onChange={event => setDueDate(event.target.value)} /></label>
       <button className="jt-primary" type="submit" disabled={title.trim().length < 2 || tasks.length >= MAX_TASKS}><Plus size={16} aria-hidden="true"/>Add task</button>
     </form>
-    {storageWarning && <p className="jt-storage-warning" role="alert">The browser could not save your tasks. Check available storage or export/copy your task list before leaving.</p>}
+    {storageWarning && <p className="jt-storage-warning" role="alert">Browser storage is unavailable. Tasks remain in this tab for now and will be lost if it closes.</p>}
     <div className="jt-task-toolbar" role="group" aria-label="Filter study tasks">
       {(['open', 'all', 'done'] as const).map(value => <button key={value} type="button" className={filter === value ? 'active' : ''} aria-pressed={filter === value} onClick={() => setFilter(value)}>{value === 'open' ? 'To do' : value === 'done' ? 'Completed' : 'All tasks'}</button>)}
     </div>
@@ -109,6 +137,6 @@ export function StudyPlanner() {
         <div className="jt-task-copy"><strong>{task.title}</strong>{task.dueDate && <span>Due {new Date(`${task.dueDate}T12:00:00`).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}</div>
         <button className="jt-task-delete" type="button" onClick={() => deleteTask(task.id)} aria-label={`Delete ${task.title}`}><Trash2 size={16} aria-hidden="true"/></button>
       </li>)}</ul>}
-    {tasks.length > 0 && <button className="jt-clear-tasks" type="button" onClick={() => setTasks([])}>Clear all tasks</button>}
+    {tasks.length > 0 && <button className="jt-clear-tasks" type="button" onClick={() => commitTasks([])}>Clear all tasks</button>}
   </section>;
 }
