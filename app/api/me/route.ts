@@ -21,6 +21,11 @@ const profileUpdateSchema = z.object({
 }).strict();
 
 export async function PATCH(request: NextRequest) {
+  // Cookie-authenticated mutations must originate from this exact site.
+  if (request.headers.get('origin') !== request.nextUrl.origin) {
+    return jsonNoStore({ error: 'ORIGIN_NOT_ALLOWED' }, 403);
+  }
+
   const result = await requireAppUser();
   if (!result.ok) return jsonNoStore({ error: result.code }, result.status);
 
