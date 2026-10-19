@@ -128,3 +128,12 @@
 .jt-record-subject-edit .jt-account-button{min-height:40px}
 @media(max-width:760px){.jt-record-subject-edit{grid-template-columns:repeat(2,minmax(0,1fr))}.jt-record-subject-edit .jt-account-button{grid-column:1/-1}}
 @media(max-width:520px){.jt-record-subject-edit{grid-template-columns:1fr}}
+
+
+.jt-import-history{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:10px}
+.jt-import-history li{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-top:1px solid var(--line)}
+.jt-import-history li>div{display:grid;gap:5px;min-width:0}
+.jt-import-history strong{font-size:13px;overflow-wrap:anywhere}
+.jt-import-history span,.jt-import-history small{color:var(--muted);font-size:11px;line-height:1.5}
+.jt-import-history button{flex-shrink:0}
+@media(max-width:520px){.jt-import-history li{align-items:flex-start;flex-direction:column}.jt-import-history button{width:100%}}
