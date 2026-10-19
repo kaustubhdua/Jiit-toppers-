@@ -32,7 +32,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 const gradeSchema = z.object({
   studentSubjectId: z.string().min(1).max(100),
   gradePoint: z.number().min(0).max(10),
-  letterGrade: z.string().trim().max(4).nullable().optional(),
+  letterGrade: z.string().trim().max(4).regex(/^[A-Za-z0-9+-]{0,4}$/).nullable().optional(),
   marksObtained: z.number().min(0).max(999999).nullable().optional(),
   maxMarks: z.number().positive().max(999999).nullable().optional(),
 }).strict().superRefine((value, context) => {
