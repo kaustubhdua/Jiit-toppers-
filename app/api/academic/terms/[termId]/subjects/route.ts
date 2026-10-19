@@ -123,3 +123,32 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
   }
 }
+
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ termId: string }> }) {
+  if (request.headers.get('origin') !== request.nextUrl.origin) {
+    return jsonNoStore({ error: 'ORIGIN_NOT_ALLOWED' }, 403);
+  }
+  const auth = await requireAppUser();
+  if (!auth.ok) return jsonNoStore({ error: auth.code }, auth.status);
+  const { termId } = await params;
+  const subjectId = request.nextUrl.searchParams.get('subjectId')?.trim();
+  if (!subjectId || subjectId.length > 100) return jsonNoStore({ error: 'INVALID_SUBJECT' }, 400);
+
+  try {
+    if (!await ownedTerm(auth.user.id, termId)) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+    const subject = await prisma.studentSubject.findFirst({
+      where: { id: subjectId, userId: auth.user.id, termId },
+      select: { id: true, code: true },
+    });
+    if (!subject) return jsonNoStore({ error: 'SUBJECT_NOT_FOUND' }, 404);
+
+    // The schema's cascading relations remove this subject's private grades and attendance snapshots.
+    await prisma.studentSubject.delete({
+      where: { id: subject.id, userId: auth.user.id, termId },
+    });
+    return jsonNoStore({ deleted: true, subjectCode: subject.code });
+  } catch {
+    return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
+  }
+}
