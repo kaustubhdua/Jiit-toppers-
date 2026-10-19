@@ -34,9 +34,9 @@ test('grade averages reject mismatched, empty, or invalid inputs', () => {
 });
 test('attendance forecast calculates maximum absences while maintaining target', () => {
   assert.deepEqual(calculateAttendanceForecast({ held: 20, attended: 16, target: 75, futureClasses: 8 }), {
-    valid: true, projectedPercentage: 57.14285714285714, maxClassesToSkip: 0, classesToAttend: 8,
+    valid: true, projectedPercentage: 57.14285714285714, maxClassesToSkip: 3, classesToAttend: 5,
   });
-  assert.equal(calculateAttendanceForecast({ held: 20, attended: 18, target: 75, futureClasses: 8 }).maxClassesToSkip, 2);
+  assert.equal(calculateAttendanceForecast({ held: 20, attended: 18, target: 75, futureClasses: 8 }).maxClassesToSkip, 5);
 });
 test('attendance forecast handles 100 percent, no upcoming classes, and impossible targets', () => {
   assert.equal(calculateAttendanceForecast({ held: 4, attended: 4, target: 100, futureClasses: 3 }).maxClassesToSkip, 0);
