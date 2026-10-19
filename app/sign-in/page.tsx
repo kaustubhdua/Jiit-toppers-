@@ -4,14 +4,16 @@ import { SignInForm } from './sign-in-form';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SignInPage() {
-  const auth = await getAuthStatus();
+export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const [auth, params] = await Promise.all([getAuthStatus(), searchParams]);
+  const callbackFailed = params.error === 'auth_callback_failed';
 
   return <main className="jt-auth-page">
     <section className="jt-auth-card">
       <span className="jt-kicker">JIIT TOPPERS ACCOUNT</span>
       <h1>Sign in securely.</h1>
       <p className="jt-lead">Use a one-time email link. JIIT Toppers never asks for your JIIT Web kiosk password.</p>
+      {callbackFailed && <p className="jt-storage-warning" role="alert">That sign-in link could not be verified or has expired. Request a new link and try again.</p>}
       {!auth.configured
         ? <div className="jt-auth-state" role="status"><strong>Sign-in setup required</strong><p>The deployment needs NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY. No email has been sent.</p></div>
         : !auth.reachable
