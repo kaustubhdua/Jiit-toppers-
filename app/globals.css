@@ -119,3 +119,7 @@
 .jt-csv-preview small{display:block;margin:8px 0;color:var(--muted)}
 .jt-csv-preview .jt-primary{margin-top:12px}
 @media(max-width:520px){.jt-csv-import-controls{grid-template-columns:1fr}}
+
+.jt-record-actions{display:flex;flex-wrap:wrap;gap:9px;margin:-10px 0 22px}
+.jt-danger{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid #e2b8b0;border-radius:9px;background:#fff7f5;color:#8b4137;font-size:12px;font-weight:700;cursor:pointer}
+.jt-danger:disabled,.jt-account-button:disabled{opacity:.55;cursor:not-allowed}
