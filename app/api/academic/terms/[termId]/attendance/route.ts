@@ -90,3 +90,43 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
   }
 }
+
+
+const attendanceDeleteSchema = z.object({
+  snapshotId: z.string().min(1).max(100),
+}).strict();
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ termId: string }> }) {
+  if (request.headers.get('origin') !== request.nextUrl.origin) {
+    return jsonNoStore({ error: 'ORIGIN_NOT_ALLOWED' }, 403);
+  }
+  const auth = await requireAppUser();
+  if (!auth.ok) return jsonNoStore({ error: auth.code }, auth.status);
+  const { termId } = await params;
+
+  const boundedBody = await readJsonBounded(request, 16_000);
+  if (!boundedBody.ok) {
+    return jsonNoStore(
+      { error: boundedBody.reason === 'TOO_LARGE' ? 'REQUEST_TOO_LARGE' : 'INVALID_JSON' },
+      boundedBody.reason === 'TOO_LARGE' ? 413 : 400,
+    );
+  }
+  const parsed = attendanceDeleteSchema.safeParse(boundedBody.value);
+  if (!parsed.success) return jsonNoStore({ error: 'INVALID_ATTENDANCE' }, 400);
+
+  try {
+    const term = await prisma.academicTerm.findFirst({
+      where: { id: termId, userId: auth.user.id },
+      select: { id: true },
+    });
+    if (!term) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+
+    const result = await prisma.attendanceSnapshot.deleteMany({
+      where: { id: parsed.data.snapshotId, userId: auth.user.id, termId },
+    });
+    if (!result.count) return jsonNoStore({ error: 'SNAPSHOT_NOT_FOUND' }, 404);
+    return jsonNoStore({ deleted: true });
+  } catch {
+    return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
+  }
+}
