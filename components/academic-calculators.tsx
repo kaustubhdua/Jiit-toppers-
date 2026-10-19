@@ -13,8 +13,10 @@ export function AcademicCalculators() {
   const [attended, setAttended] = useState('0');
   const [target, setTarget] = useState('75');
   const [futureClasses, setFutureClasses] = useState('8');
-  const [credits, setCredits] = useState('4,3,3,2');
-  const [grades, setGrades] = useState('9,8,8,10');
+  const [semesterCredits, setSemesterCredits] = useState('');
+  const [semesterGrades, setSemesterGrades] = useState('');
+  const [cumulativeCredits, setCumulativeCredits] = useState('');
+  const [cumulativeGrades, setCumulativeGrades] = useState('');
 
   const counts = {
     held: held.trim() === '' ? Number.NaN : Number(held),
@@ -29,10 +31,12 @@ export function AcademicCalculators() {
     () => calculateAttendanceForecast({ ...counts, futureClasses: futureClasses.trim() === '' ? Number.NaN : Number(futureClasses) }),
     [held, attended, target, futureClasses],
   );
-  const parsedCredits = useMemo(() => parseNumbers(credits), [credits]);
-  const parsedGrades = useMemo(() => parseNumbers(grades), [grades]);
-  const sgpa = useMemo(() => calculateSgpa(parsedCredits, parsedGrades), [parsedCredits, parsedGrades]);
-  const cgpa = useMemo(() => calculateCgpa(parsedCredits, parsedGrades), [parsedCredits, parsedGrades]);
+  const parsedSemesterCredits = useMemo(() => parseNumbers(semesterCredits), [semesterCredits]);
+  const parsedSemesterGrades = useMemo(() => parseNumbers(semesterGrades), [semesterGrades]);
+  const parsedCumulativeCredits = useMemo(() => parseNumbers(cumulativeCredits), [cumulativeCredits]);
+  const parsedCumulativeGrades = useMemo(() => parseNumbers(cumulativeGrades), [cumulativeGrades]);
+  const sgpa = useMemo(() => calculateSgpa(parsedSemesterCredits, parsedSemesterGrades), [parsedSemesterCredits, parsedSemesterGrades]);
+  const cgpa = useMemo(() => calculateCgpa(parsedCumulativeCredits, parsedCumulativeGrades), [parsedCumulativeCredits, parsedCumulativeGrades]);
 
   return <section className="jt-calculators" aria-labelledby="academic-tools-title">
     <span className="jt-kicker">PERSONAL PLANNING TOOLS</span><h2 id="academic-tools-title">Academic calculators</h2>
@@ -52,13 +56,14 @@ export function AcademicCalculators() {
         {!attendance.valid && <p role="alert">Check that attended classes do not exceed classes held and all values are valid.</p>}
       </article>
       <article className="jt-card"><h3>SGPA estimator</h3><p>Enter comma-separated course credits and matching grade points for one semester.</p>
-        <div className="jt-form-grid"><label>Course credits<input value={credits} onChange={event => setCredits(event.target.value)} /></label><label>Grade points<input value={grades} onChange={event => setGrades(event.target.value)} /></label></div>
-        <small>Example: 4,3,3,2 and 9,8,8,10</small>
-        <p className="jt-result" aria-live="polite">{sgpa === null ? 'Enter matching positive credits and grade points from 0 to 10.' : 'Estimated SGPA: ' + sgpa.toFixed(2)}</p>
+        <div className="jt-form-grid"><label>Course credits<input value={semesterCredits} onChange={event => setSemesterCredits(event.target.value)} placeholder="e.g. 4,3,3,2" /></label><label>Grade points<input value={semesterGrades} onChange={event => setSemesterGrades(event.target.value)} placeholder="e.g. 9,8,8,10" /></label></div>
+        <small>Use positive credits and grade points from 0 to 10. Both lists must contain the same number of values.</small>
+        <p className="jt-result" aria-live="polite">{sgpa === null ? 'Enter matching credits and grade points to calculate an estimate.' : 'Estimated SGPA: ' + sgpa.toFixed(2)}</p>
       </article>
-      <article className="jt-card"><h3>CGPA estimator</h3><p>Use all included courses across completed semesters. The result is credit-weighted; enter the credits and grade points for each included course.</p>
-        <p className="jt-result" aria-live="polite">{cgpa === null ? 'Enter matching positive credits and grade points from 0 to 10 in the inputs above.' : 'Estimated cumulative GPA from the same inputs: ' + cgpa.toFixed(2)}</p>
-        <small>The SGPA and CGPA fields share the same inputs as a simple demonstration. For a real cumulative result, include every relevant course/term according to your programme's rules.</small>
+      <article className="jt-card"><h3>CGPA estimator</h3><p>Enter all included courses across completed semesters. The calculation is credit-weighted.</p>
+        <div className="jt-form-grid"><label>Cumulative course credits<input value={cumulativeCredits} onChange={event => setCumulativeCredits(event.target.value)} placeholder="e.g. 20,22,21" /></label><label>Cumulative grade points<input value={cumulativeGrades} onChange={event => setCumulativeGrades(event.target.value)} placeholder="e.g. 8.2,9,8.6" /></label></div>
+        <small>Include every relevant course/term according to your programme's rules. This does not read an official grade card.</small>
+        <p className="jt-result" aria-live="polite">{cgpa === null ? 'Enter matching cumulative credits and grade points to calculate an estimate.' : 'Estimated CGPA: ' + cgpa.toFixed(2)}</p>
       </article>
     </div>
   </section>;
