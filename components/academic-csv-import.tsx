@@ -100,7 +100,10 @@ export function AcademicCsvImport({ termId, onImported }: { termId: string; onIm
     {preview && <div className="jt-csv-preview">
       <strong>Preview: {preview.count} row(s)</strong>
       <div className="jt-csv-table-wrap"><table><thead><tr><th>Code</th><th>Subject</th><th>Credits</th>{preview.kind === 'GRADE_CARD' ? <><th>Grade point</th><th>Marks</th></> : <><th>Attended / held</th><th>Target</th></>}</tr></thead>
-        <tbody>{preview.rows.slice(0, 8).map(row => <tr key={row.code}><td>{row.code}</td><td>{row.name}</td><td>{row.credits.toFixed(1)}</td>{preview.kind === 'GRADE_CARD' ? <><td>{row.gradePoint.toFixed(2)}</td><td>{row.marksObtained === null ? '—' : `${row.marksObtained} / ${row.maxMarks}`}</td></> : <><td>{row.classesAttended} / {row.classesHeld}</td><td>{row.targetPercent}%</td></>}</tr>)}</tbody>
+        <tbody>{preview.kind === 'GRADE_CARD'
+          ? preview.rows.slice(0, 8).map(row => <tr key={row.code}><td>{row.code}</td><td>{row.name}</td><td>{row.credits.toFixed(1)}</td><td>{row.gradePoint.toFixed(2)}</td><td>{row.marksObtained === null ? '—' : `${row.marksObtained} / ${row.maxMarks}`}</td></tr>)
+          : preview.rows.slice(0, 8).map(row => <tr key={row.code}><td>{row.code}</td><td>{row.name}</td><td>{row.credits.toFixed(1)}</td><td>{row.classesAttended} / {row.classesHeld}</td><td>{row.targetPercent}%</td></tr>)}
+        </tbody>
       </table></div>
       {preview.count > 8 && <small>Showing the first 8 rows. All {preview.count} validated rows will be imported.</small>}
       <button className="jt-primary" type="button" onClick={confirmImport} disabled={busy}>{busy ? 'Importing…' : `Confirm and import ${preview.count} row(s)`}</button>
