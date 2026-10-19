@@ -2,6 +2,7 @@ import { BookOpen, BriefcaseBusiness, Building2, CalendarDays, Calculator, Gradu
 import type { Section } from './jt-navigation';
 import { AcademicCalculators } from './academic-calculators';
 import { PyqDiscovery } from './pyq-discovery';
+import { StudyPlanner } from './study-planner';
 
 type WorkspaceSection = Exclude<Section, 'home'>;
 type WorkspaceCard = { title: string; body: string; icon: LucideIcon };
@@ -24,6 +25,7 @@ export function JTWorkspace({ section, query }: { section: WorkspaceSection; que
     {cards.length ? <div className="jt-grid jt-three">{cards.map(({title,body,icon:Icon})=><article className="jt-card" key={title}><Icon size={22}/><h3>{title}</h3><p>{body}</p><span className="jt-pill">{section === 'resources' && title === 'Previous-year papers' ? 'External source' : 'Planned / foundation'}</span></article>)}</div> : <div className="jt-card" role="status"><h3>No matching items</h3><p>Try a different search term.</p></div>}
     {section === 'academics' && <AcademicCalculators />}
     {section === 'resources' && <PyqDiscovery />}
+    {section === 'exams' && <StudyPlanner />}
     {section !== 'resources' && <p className="jt-lead" style={{fontSize:13,marginTop:24}}>This workspace is still being built. Do not treat its placeholder cards as live JIIT services or official records.</p>}
   </section>;
 }
