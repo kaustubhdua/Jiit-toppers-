@@ -38,7 +38,8 @@ The connected Jiit-toppers- Supabase project is INACTIVE. Supabase rejected rest
 ## Before production
 
 - Verify login, email callback, logout, expired session, unavailable provider and redirect validation.
+- Verify the account profile upsert and term/subject/grade/attendance/CSV import workflows in a staging database.
 - Add rate limits and bot protection according to abuse risk.
-- Implement per-user data ownership on every API/Server Action and private object download before storing academic records.
+- Test per-user ownership on every API/Server Action with two real test accounts before enabling academic record features publicly.
 - Add privacy notice, data retention/deletion and incident response.
 - Never treat an authenticated account as verified JIIT enrollment unless an independent, permitted verification method is implemented.
