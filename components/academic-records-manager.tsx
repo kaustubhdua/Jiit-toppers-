@@ -140,10 +140,10 @@ export function AcademicRecordsManager() {
   async function exportRecords() {
     setBusy(true); setMessage(''); setError('');
     try {
-      const response = await fetch('/api/academic/terms', { cache: 'no-store' });
+      const response = await fetch('/api/academic/export', { cache: 'no-store' });
       const data = await response.json();
       if (!response.ok) throw new Error('Your records could not be exported right now.');
-      const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), terms: data.terms }, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -247,7 +247,7 @@ export function AcademicRecordsManager() {
         const attendance = subject.attendanceSnapshots[0];
         const percentage = attendance && attendance.classesHeld > 0 ? (attendance.classesAttended / attendance.classesHeld) * 100 : null;
         return <article className="jt-card jt-record-subject" key={subject.id}>
-          <div className="jt-record-subject-heading"><div><span className="jt-kicker">{subject.code} · {Number(subject.credits).toFixed(1)} CREDITS</span><h3>{subject.name}</h3></div><span className="jt-pill">Manual records</span></div>
+          <div className="jt-record-subject-heading"><div><span className="jt-kicker">{subject.code} · {Number(subject.credits).toFixed(1)} CREDITS</span><h3>{subject.name}</h3></div><span className="jt-pill">Private records</span></div>
           <form className="jt-record-form jt-record-subject-edit" onSubmit={event => submitSubjectUpdate(event, subject)}>
             <label>Course name<input name="name" maxLength={120} defaultValue={subject.name} required /></label>
             <label>Credits<input name="credits" type="number" min="0.1" max="30" step="0.1" defaultValue={String(subject.credits)} required /></label>
