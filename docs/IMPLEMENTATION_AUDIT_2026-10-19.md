@@ -112,3 +112,12 @@ These changes are **not** a claim that the overall project is finished.
 - [ ] Any portal integration is separately authorized, read-only/scoped where possible, and has a tested kill switch.
 
 **Conclusion:** continue implementation in vertical slices. Do not claim the project is finished until the acceptance checklist is supported by test and deployment evidence.
+
+
+## Environment blocker discovered during implementation
+
+The connected Supabase project named Jiit-toppers- (project ref ofqxnjbyyenxhzotwhhh, region ap-northeast-1) is currently INACTIVE. Read-only SQL inspection timed out because its database is not active. The organization is on the Free plan and already has the maximum number of active free projects. Attempting to restore this project was rejected by Supabase with a limit error.
+
+No other project was paused or deleted, and no plan upgrade was made. Restoring the JIIT Toppers database requires the owner to choose an authorized infrastructure action: pause an unrelated active free project, upgrade the organization/project plan, or explicitly move JIIT Toppers to a different approved database. Do not pause JYC, Saathi, or Nirdhoom on the user's behalf.
+
+Until the database is active, schema parity, RLS policies, live auth, migrations, persistence, and production database health cannot be verified. The application can still be improved and tested independently, but production completion is blocked on this infrastructure decision.
