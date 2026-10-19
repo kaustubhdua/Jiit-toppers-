@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { AcademicCsvImport } from './academic-csv-import';
 
-type Grade = { gradePoint: string | number; letterGrade: string | null; marksObtained: string | number | null; maxMarks: string | number | null; source: string; observedAt: string };
-type AttendanceSnapshot = { classesHeld: number; classesAttended: number; targetPercent: string | number; source: string; observedAt: string };
+type Grade = { gradePoint: string | number; letterGrade: string | null; marksObtained: string | number | null; maxMarks: string | number | null; source: string; sourceLabel: string | null; observedAt: string };
+type AttendanceSnapshot = { classesHeld: number; classesAttended: number; targetPercent: string | number; source: string; sourceLabel: string | null; observedAt: string };
 type Subject = { id: string; code: string; name: string; credits: string | number; grades: Grade[]; attendanceSnapshots: AttendanceSnapshot[] };
 type Term = { id: string; label: string; academicYear: number; semesterNumber: number; subjects: Subject[]; _count: { subjects: number; gradeRecords: number; attendanceSnapshots: number } };
 
