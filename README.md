@@ -32,6 +32,7 @@ The browser-local study planner stores tasks in the current browser only. Do not
 ## Research and implementation docs
 
 - [Product and implementation framework](docs/PRODUCT_AND_IMPLEMENTATION_FRAMEWORK.md)
+- [PYQJIIT integration and Study Vault delivery plan](docs/PYQJIIT_INTEGRATION_PLAN.md)
 - [Authentication setup](docs/AUTH_SETUP.md)
 - [Implementation audit and release blockers](docs/IMPLEMENTATION_AUDIT_2026-10-19.md)
 - [Feature map](docs/FEATURE_MAP.md)
@@ -88,11 +89,12 @@ Do not upload private student information, credentials, copyrighted material wit
 4. Verify owner-scoped academic terms, subjects, grade records, attendance snapshots and transactional CSV imports against the active database.
 5. Add account deletion, safe document storage and XLSX/PDF imports; verify the current JSON export and term-deletion controls.
 6. Validate academic calculations against current programme-specific rules.
-7. Add a permission-aware resource catalogue, PYQs, exam/timetable workflows and provenance.
-8. Add campus and career directories with freshness and moderation.
-9. Implement community workflows, abuse reporting and notifications.
-10. Add contextual search and JIIT Sathi only after source data is trustworthy.
-11. Complete security, accessibility, performance and deployment verification.
+7. Deliver the link-first PYQJIIT Study Vault workflow; request permission before any metadata feed, PDF embedding or mirroring.
+8. Add a permission-aware resource catalogue, exam/timetable workflows and provenance.
+9. Add campus and career directories with freshness and moderation.
+10. Implement community workflows, abuse reporting and notifications.
+11. Add contextual search and JIIT Sathi only after source data is trustworthy.
+12. Complete security, accessibility, performance and deployment verification.
 
 ## Production readiness
 
