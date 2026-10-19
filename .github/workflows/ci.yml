@@ -15,14 +15,16 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: npm
-      - run: npm ci
+      # The repository currently has no committed package-lock.json, so npm ci
+      # and setup-node's lockfile-based cache cannot run yet. Keep CI executable
+      # while the lockfile is generated in a Node-enabled environment.
+      - run: npm install --no-audit --no-fund
       - run: npm test
       - run: npm run lint
       - run: npm run typecheck
