@@ -56,6 +56,28 @@ enum AnnouncementStatus {
   ARCHIVED
 }
 
+enum AcademicRecordSource {
+  MANUAL
+  CSV_IMPORT
+  XLSX_IMPORT
+  PDF_IMPORT
+  AUTHORIZED_PORTAL
+}
+
+enum AcademicImportKind {
+  GRADE_CARD
+  ATTENDANCE
+  TIMETABLE
+  EXAM_SCHEDULE
+}
+
+enum AcademicImportStatus {
+  REVIEW_REQUIRED
+  CONFIRMED
+  FAILED
+  DELETED
+}
+
 model User {
   id             String   @id @default(cuid())
   authProviderId String?  @unique
@@ -75,11 +97,135 @@ model User {
   placementExperiences PlacementExperience[]
   discussions        Discussion[]
   discussionReplies  DiscussionReply[]
-  auditEvents        AuditEvent[]           @relation("AuditActor")
+  auditEvents           AuditEvent[]           @relation("AuditActor")
+  academicTerms         AcademicTerm[]
+  studentSubjects       StudentSubject[]
+  gradeRecords          GradeRecord[]
+  attendanceSnapshots   AttendanceSnapshot[]
+  academicImports       AcademicImport[]
 
   @@index([campusId, branchId, admissionYear])
   @@index([role])
   @@index([branchId])
+}
+
+
+model AcademicTerm {
+  id             String   @id @default(cuid())
+  userId         String
+  label          String
+  academicYear   Int
+  semesterNumber Int
+  startsAt       DateTime?
+  endsAt         DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subjects            StudentSubject[]
+  gradeRecords        GradeRecord[]
+  attendanceSnapshots AttendanceSnapshot[]
+  imports             AcademicImport[]
+
+  @@unique([userId, academicYear, semesterNumber])
+  @@index([userId, academicYear])
+}
+
+model StudentSubject {
+  id        String   @id @default(cuid())
+  userId    String
+  termId    String
+  code      String
+  name      String
+  credits   Decimal  @db.Decimal(4, 1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  term                AcademicTerm         @relation(fields: [termId], references: [id], onDelete: Cascade)
+  grades              GradeRecord[]
+  attendanceSnapshots AttendanceSnapshot[]
+
+  @@unique([termId, code])
+  @@index([userId, termId])
+}
+
+model AcademicImport {
+  id             String              @id @default(cuid())
+  userId         String
+  termId         String?
+  kind           AcademicImportKind
+  status         AcademicImportStatus @default(REVIEW_REQUIRED)
+  originalName   String
+  mimeType       String
+  sizeBytes      BigInt
+  checksum       String?
+  storageKey     String?
+  parserVersion  String?
+  sourceLabel    String?
+  errorSummary   String?
+  createdAt      DateTime            @default(now())
+  confirmedAt    DateTime?
+  deletedAt      DateTime?
+
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  term                AcademicTerm?        @relation(fields: [termId], references: [id], onDelete: SetNull)
+  gradeRecords        GradeRecord[]
+  attendanceSnapshots AttendanceSnapshot[]
+
+  @@unique([userId, termId, kind, checksum])
+  @@index([userId, createdAt])
+  @@index([userId, status])
+}
+
+model GradeRecord {
+  id              String               @id @default(cuid())
+  userId          String
+  termId          String
+  studentSubjectId String
+  gradePoint      Decimal              @db.Decimal(4, 2)
+  letterGrade     String?
+  marksObtained   Decimal?             @db.Decimal(6, 2)
+  maxMarks        Decimal?             @db.Decimal(6, 2)
+  source          AcademicRecordSource @default(MANUAL)
+  sourceLabel     String?
+  observedAt      DateTime             @default(now())
+  importId        String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  term    AcademicTerm   @relation(fields: [termId], references: [id], onDelete: Cascade)
+  subject StudentSubject @relation(fields: [studentSubjectId], references: [id], onDelete: Cascade)
+  import  AcademicImport? @relation(fields: [importId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, termId, studentSubjectId])
+  @@index([userId, termId, observedAt])
+  @@index([importId])
+}
+
+model AttendanceSnapshot {
+  id               String               @id @default(cuid())
+  userId           String
+  termId           String
+  studentSubjectId String
+  classesHeld      Int
+  classesAttended  Int
+  targetPercent    Decimal              @default(75) @db.Decimal(5, 2)
+  source           AcademicRecordSource @default(MANUAL)
+  sourceLabel      String?
+  observedAt       DateTime             @default(now())
+  importId         String?
+  createdAt        DateTime             @default(now())
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  term    AcademicTerm   @relation(fields: [termId], references: [id], onDelete: Cascade)
+  subject StudentSubject @relation(fields: [studentSubjectId], references: [id], onDelete: Cascade)
+  import  AcademicImport? @relation(fields: [importId], references: [id], onDelete: SetNull)
+
+  @@index([userId, termId, observedAt])
+  @@index([studentSubjectId, observedAt])
+  @@index([importId])
 }
 
 model Campus {

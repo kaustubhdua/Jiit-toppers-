@@ -30,3 +30,20 @@ The Prisma schema is the application domain model. It is not a live database unt
 4. Add database-level row policies if the application uses Supabase directly.
 5. Add upload scanning, private storage and moderation before accepting files.
 6. Add tests for authorization, validation, and moderation transitions.
+
+
+## Personal academic records (implementation branch)
+
+The academic-record migration adds the following owner-scoped models:
+
+- **AcademicTerm** — a user's academic year and semester.
+- **StudentSubject** — course code/name/credits for a specific user-owned term.
+- **GradeRecord** — one current grade record per user/term/subject, with optional marks, source, source label and observation time.
+- **AttendanceSnapshot** — timestamped attendance counts and target; multiple snapshots preserve history.
+- **AcademicImport** — import metadata, checksum, parser version, status and optional private storage key.
+
+The API obtains the owner from a verified Supabase Auth session and never accepts a userId from the request body. Every academic query is scoped to the authenticated user's ID and term/subject ownership is checked before writes. Database constraints validate grade points, marks, credits, attendance counts, semester range and import size. RLS is enabled on the new tables with no browser Data API policies; browser clients must use the authenticated server API rather than direct table access.
+
+CSV files are parsed in the browser, previewed and only the confirmed normalized rows are sent. The raw CSV is not uploaded. The server applies bounded JSON parsing, schema validation, duplicate-code detection and a transaction. Grade imports replace the current grade record for a subject; attendance imports append a dated snapshot. A metadata conflict in course name/credits is rejected instead of silently overwriting the existing subject.
+
+**Not yet verified:** the connected Supabase project is inactive, so the migration has not been applied to a live/staging database and the APIs have not been tested against a real database. Do not enable public academic-record use until the project is restored and two-account ownership tests, migration checks, backup/restore, export and term-deletion checks pass. Account deletion and private-file cleanup must be implemented before storing raw documents.

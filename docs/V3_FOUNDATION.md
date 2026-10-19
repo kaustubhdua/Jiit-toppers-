@@ -17,7 +17,7 @@ This document is the release-gate source of truth. A feature is not complete mer
 ## Not implemented / release blockers
 
 - No committed package lockfile; CI currently uses npm install, so dependency resolution is not fully reproducible.
-- No committed Prisma migrations or tested migration/rollback process.
+- Committed Prisma migrations exist for initial schema creation, RLS enablement and foreign-key indexes; however, live schema/migration-history alignment and rollback/recovery have not been verified against the currently inactive Supabase project.
 - No configured production database, seed/import pipeline or staging environment.
 - No authentication, session lifecycle, onboarding or server-side role authorization.
 - No database row-level security policies. Prisma models alone do not enforce authorization.
@@ -31,7 +31,7 @@ This document is the release-gate source of truth. A feature is not complete mer
 ## Release gates
 
 ### Foundation
-- Commit a lockfile and use npm ci in CI (currently outstanding; CI still uses npm install).
+- Commit a package lock generated in a Node-enabled environment and restore npm ci with lockfile-based caching. CI temporarily uses npm install until the lockfile is committed.
 - Run lint, typecheck, Prisma validation, tests and next build from a clean checkout.
 - Keep data access in server-only modules and presentation components focused.
 - Provide loading, empty, error and unavailable states for every live-data route.

@@ -9,3 +9,122 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Source-aware Study Vault links */
+.jt-source-panel{margin-top:42px;padding-top:34px;border-top:1px solid var(--line)}
+.jt-source-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px}
+.jt-source-heading h2{font:700 clamp(25px,4vw,36px) 'Space Grotesk';letter-spacing:-.035em;margin:8px 0 0;max-width:600px}
+.jt-source-heading>p{max-width:430px;color:var(--muted);line-height:1.6;margin:0;font-size:14px}
+.jt-source-meta{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.jt-source-meta svg{margin:0;color:#8c7858}
+.jt-source-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:22px}
+.jt-source-footer .jt-pill{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-size:11px}
+.jt-source-footer .jt-pill svg{margin:0}
+.jt-source-footer .jt-link-button{gap:8px;font-size:13px}
+.jt-source-footer .jt-link-button svg{margin:0}
+.jt-source-note{font-size:12px;color:var(--muted);line-height:1.6;margin-top:16px}
+@media(max-width:700px){.jt-source-heading{display:block}.jt-source-heading>p{margin-top:12px}}
+
+/* Browser-local study planner */
+.jt-study-planner{margin-top:42px;padding-top:34px;border-top:1px solid var(--line)}
+.jt-planner-notice{border-left:3px solid var(--accent);padding:10px 14px;background:#f0ece3;color:var(--muted);font-size:13px;line-height:1.6}
+.jt-task-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(170px,.45fr) auto;gap:12px;align-items:end;margin:22px 0}
+.jt-task-form label{display:grid;gap:7px;color:var(--muted);font-size:12px;font-weight:700}
+.jt-task-form input{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-weight:400}
+.jt-task-form .jt-primary{display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.jt-task-form .jt-primary svg{margin:0}
+.jt-task-toolbar{display:flex;gap:7px;margin:20px 0}
+.jt-task-toolbar button{padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);cursor:pointer}
+.jt-task-toolbar button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.jt-task-empty{display:flex;flex-direction:column;gap:6px;padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}
+.jt-task-empty strong{color:var(--ink)}
+.jt-task-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.jt-task-list li{display:flex;align-items:center;gap:13px;padding:15px 4px;border-bottom:1px solid var(--line)}
+.jt-task-toggle,.jt-task-delete{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);cursor:pointer}
+.jt-task-toggle svg,.jt-task-delete svg{margin:0}
+.jt-task-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.jt-task-copy strong{overflow-wrap:anywhere}
+.jt-task-copy span{color:var(--muted);font-size:12px}
+.jt-task-list li.completed .jt-task-copy strong{text-decoration:line-through;color:var(--muted)}
+.jt-task-delete{color:#8b4137}
+.jt-clear-tasks{margin-top:14px;border:0;background:transparent;color:var(--muted);text-decoration:underline;cursor:pointer;padding:8px 0}
+.jt-storage-warning{color:#8b4137;font-size:13px}
+@media(max-width:650px){.jt-task-form{grid-template-columns:1fr}.jt-task-form .jt-primary{width:100%}}
+
+/* Supabase Auth and account navigation */
+.jt-account{flex:0 0 auto}
+.jt-account form{margin:0}
+.jt-account-button{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;cursor:pointer}
+.jt-auth-page{min-height:75vh;display:grid;place-items:center;padding:54px 12px}
+.jt-auth-card{width:min(100%,520px);padding:clamp(24px,5vw,42px);border:1px solid var(--line);border-radius:20px;background:var(--card);box-shadow:0 24px 70px #0000000a}
+.jt-auth-card h1{font:700 clamp(34px,7vw,52px) 'Space Grotesk';letter-spacing:-.045em;margin:12px 0}
+.jt-auth-card>.jt-lead{font-size:15px}
+.jt-signin-form{display:grid;gap:10px;margin-top:26px}
+.jt-signin-form label{font-size:13px;font-weight:700}
+.jt-signin-form input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit}
+.jt-signin-form .jt-primary{margin-top:4px}
+.jt-signin-message{min-height:20px;color:var(--muted);font-size:13px;line-height:1.5}
+.jt-auth-state{margin:24px 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:#f0ece3}
+.jt-auth-state p{font-size:14px;line-height:1.6;color:var(--muted)}
+.jt-auth-state form{margin-top:10px}
+.jt-auth-secondary{padding:9px 0;border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer}
+.jt-auth-footnote{margin-top:24px;font-size:12px;line-height:1.6;color:var(--muted)}
+.jt-auth-back{display:inline-block;margin-top:14px;font-size:13px;color:var(--muted)}
+@media(max-width:560px){.jt-account-button{padding:8px 9px;font-size:11px}.jt-auth-page{padding:30px 0}}
+
+.jt-account{display:flex;align-items:center;gap:7px}
+.jt-profile-form{display:grid;gap:10px;margin:24px 0}
+.jt-profile-form label{font-size:13px;font-weight:700}
+.jt-profile-form label span{font-weight:400;color:var(--muted)}
+.jt-profile-form input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font:inherit}
+.jt-profile-form .jt-primary{margin-top:4px}
+.jt-profile-form p{min-height:20px;color:var(--muted);font-size:13px;line-height:1.5}
+
+.jt-academics-card{width:min(100%,1120px)}
+.jt-record-manager h2{font:700 clamp(28px,5vw,42px) 'Space Grotesk';letter-spacing:-.04em;margin:10px 0}
+.jt-record-form-card{margin:22px 0}
+.jt-record-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:end}
+.jt-record-form label{display:grid;gap:7px;font-size:12px;font-weight:700;color:var(--muted);min-width:0}
+.jt-record-form input,.jt-record-term-select select{width:100%;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit;font-weight:400}
+.jt-record-form .jt-primary{display:inline-flex;align-items:center;justify-content:center;min-height:41px;white-space:nowrap}
+.jt-record-term-select{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:14px;margin:24px 0}
+.jt-record-term-select label{font-size:13px;font-weight:700}
+.jt-record-subjects{display:grid;gap:18px;margin-top:20px}
+.jt-record-subject-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.jt-record-subject-heading h3{margin:8px 0}
+.jt-record-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.jt-record-summary>div{display:grid;gap:5px;padding:13px;border-radius:10px;background:#f0ece3}
+.jt-record-summary span{font-size:12px;color:var(--muted)}
+.jt-record-summary strong{font:700 22px 'Space Grotesk'}
+.jt-record-subform{grid-template-columns:repeat(4,minmax(0,1fr));padding-top:18px;margin-top:18px;border-top:1px solid var(--line)}
+.jt-record-subform h4{grid-column:1/-1;margin:0;font-size:14px}
+.jt-record-subform .jt-primary{grid-column:1/-1}
+.jt-record-subject small{display:block;margin-top:10px;color:var(--muted);font-size:11px;line-height:1.6}
+.jt-record-error{padding:10px 12px;border-radius:9px;background:#fae8e5;color:#8b4137;font-size:13px}
+.jt-record-message{padding:10px 12px;border-radius:9px;background:#e7f0e7;color:#285a35;font-size:13px}
+@media(max-width:760px){.jt-record-form{grid-template-columns:repeat(2,minmax(0,1fr))}.jt-record-subform{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.jt-record-form,.jt-record-subform{grid-template-columns:1fr}.jt-record-term-select{grid-template-columns:1fr}.jt-record-subject-heading{display:block}.jt-record-summary{grid-template-columns:1fr}}
+
+.jt-csv-import{margin:22px 0}
+.jt-csv-import>p{color:var(--muted);font-size:13px;line-height:1.6}
+.jt-csv-import-controls{grid-template-columns:repeat(2,minmax(0,1fr));margin:18px 0}
+.jt-csv-import-controls select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font:inherit}
+.jt-csv-format{margin:14px 0;color:var(--muted);font-size:12px;line-height:1.6}
+.jt-csv-format summary{cursor:pointer;color:var(--ink);font-weight:700}
+.jt-csv-preview{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.jt-csv-table-wrap{overflow-x:auto;margin:12px 0}
+.jt-csv-table-wrap table{width:100%;border-collapse:collapse;font-size:12px;text-align:left}
+.jt-csv-table-wrap th,.jt-csv-table-wrap td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.jt-csv-table-wrap th{color:var(--muted);font-size:11px}
+.jt-csv-preview small{display:block;margin:8px 0;color:var(--muted)}
+.jt-csv-preview .jt-primary{margin-top:12px}
+@media(max-width:520px){.jt-csv-import-controls{grid-template-columns:1fr}}
+
+.jt-record-actions{display:flex;flex-wrap:wrap;gap:9px;margin:-10px 0 22px}
+.jt-danger{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border:1px solid #e2b8b0;border-radius:9px;background:#fff7f5;color:#8b4137;font-size:12px;font-weight:700;cursor:pointer}
+.jt-danger:disabled,.jt-account-button:disabled{opacity:.55;cursor:not-allowed}
+
+.jt-record-subject-edit{grid-template-columns:minmax(0,2fr) minmax(110px,1fr) auto;padding:14px 0 0;margin:14px 0 0;border-top:1px dashed var(--line)}
+.jt-record-subject-edit .jt-account-button{min-height:40px}
+@media(max-width:760px){.jt-record-subject-edit{grid-template-columns:repeat(2,minmax(0,1fr))}.jt-record-subject-edit .jt-account-button{grid-column:1/-1}}
+@media(max-width:520px){.jt-record-subject-edit{grid-template-columns:1fr}}
