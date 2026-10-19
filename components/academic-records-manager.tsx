@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { AcademicCsvImport } from './academic-csv-import';
+import { AcademicImportHistory } from './academic-import-history';
 
 type Grade = { id: string; gradePoint: string | number; letterGrade: string | null; marksObtained: string | number | null; maxMarks: string | number | null; source: string; sourceLabel: string | null; observedAt: string };
 type AttendanceSnapshot = { id: string; classesHeld: number; classesAttended: number; targetPercent: string | number; source: string; sourceLabel: string | null; observedAt: string };
@@ -292,6 +293,7 @@ export function AcademicRecordsManager() {
     </article>}
 
     {selectedTerm && <AcademicCsvImport termId={selectedTerm.id} onImported={loadTerms}/>}
+    {selectedTerm && <AcademicImportHistory termId={selectedTerm.id} onDeleted={loadTerms}/>}
 
     {selectedTerm && selectedTerm.subjects.length === 0 && <div className="jt-task-empty"><strong>No subjects in this term yet.</strong><span>Add a subject above to start recording grades and attendance.</span></div>}
     {selectedTerm && selectedTerm.subjects.length > 0 && <div className="jt-record-subjects">

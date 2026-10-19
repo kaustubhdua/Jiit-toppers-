@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { requireAppUser } from '@/lib/auth/current-user';
 import { prisma } from '@/lib/prisma';
-import { readJsonBounded } from '@/lib/http/read-json-bounded';
+import { readJsonBounded } from '@/lib/http/read-json-bounded.mjs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -152,5 +152,82 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (error instanceof Error && error.message === 'ACADEMIC_SUBJECT_CONFLICT') return jsonNoStore({ error: 'SUBJECT_METADATA_CONFLICT' }, 409);
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') return jsonNoStore({ error: 'DUPLICATE_IMPORT' }, 409);
     return jsonNoStore({ error: 'IMPORT_FAILED' }, 503);
+  }
+}
+
+
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ termId: string }> }) {
+  const auth = await requireAppUser();
+  if (!auth.ok) return jsonNoStore({ error: auth.code }, auth.status);
+  const { termId } = await params;
+
+  try {
+    const term = await prisma.academicTerm.findFirst({
+      where: { id: termId, userId: auth.user.id },
+      select: { id: true },
+    });
+    if (!term) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+
+    const imports = await prisma.academicImport.findMany({
+      where: { userId: auth.user.id, termId },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        kind: true,
+        status: true,
+        originalName: true,
+        mimeType: true,
+        sizeBytes: true,
+        checksum: true,
+        parserVersion: true,
+        sourceLabel: true,
+        createdAt: true,
+        confirmedAt: true,
+        deletedAt: true,
+        storageKey: true,
+      },
+    });
+    return jsonNoStore({
+      imports: imports.map(item => ({
+        ...item,
+        sizeBytes: item.sizeBytes.toString(),
+        storageKey: undefined,
+      })),
+    });
+  } catch {
+    return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
+  }
+}
+
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ termId: string }> }) {
+  if (request.headers.get('origin') !== request.nextUrl.origin) return jsonNoStore({ error: 'ORIGIN_NOT_ALLOWED' }, 403);
+  const auth = await requireAppUser();
+  if (!auth.ok) return jsonNoStore({ error: auth.code }, auth.status);
+  const { termId } = await params;
+  const importId = request.nextUrl.searchParams.get('importId')?.trim();
+  if (!importId || importId.length > 100) return jsonNoStore({ error: 'INVALID_IMPORT_ID' }, 400);
+
+  try {
+    const term = await prisma.academicTerm.findFirst({
+      where: { id: termId, userId: auth.user.id },
+      select: { id: true },
+    });
+    if (!term) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+
+    const importRecord = await prisma.academicImport.findFirst({
+      where: { id: importId, userId: auth.user.id, termId },
+      select: { id: true, storageKey: true },
+    });
+    if (!importRecord) return jsonNoStore({ error: 'IMPORT_NOT_FOUND' }, 404);
+    if (importRecord.storageKey) return jsonNoStore({ error: 'STORAGE_CLEANUP_REQUIRED' }, 409);
+
+    await prisma.$transaction(async tx => {
+      await tx.gradeRecord.deleteMany({ where: { userId: auth.user.id, termId, importId } });
+      await tx.attendanceSnapshot.deleteMany({ where: { userId: auth.user.id, termId, importId } });
+      await tx.academicImport.delete({ where: { id: importId, userId: auth.user.id, termId } });
+    });
+    return jsonNoStore({ deleted: true });
+  } catch {
+    return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
   }
 }

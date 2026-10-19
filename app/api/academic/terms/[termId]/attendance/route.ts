@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import { requireAppUser } from '@/lib/auth/current-user';
 import { prisma } from '@/lib/prisma';
-import { readJsonBounded } from '@/lib/http/read-json-bounded';
+import { readJsonBounded } from '@/lib/http/read-json-bounded.mjs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
