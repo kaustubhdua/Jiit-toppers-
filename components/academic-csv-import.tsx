@@ -49,12 +49,8 @@ export function AcademicCsvImport({ termId, onImported }: { termId: string; onIm
     if (!file || !preview) return;
     setBusy(true); setError(''); setMessage('');
     try {
-      const fileBytes = new Uint8Array(await file.arrayBuffer());
-      const prefix = new TextEncoder().encode(`${termId}:${kind}:`);
-      const fingerprintInput = new Uint8Array(prefix.length + fileBytes.length);
-      fingerprintInput.set(prefix, 0);
-      fingerprintInput.set(fileBytes, prefix.length);
-      const digest = await crypto.subtle.digest('SHA-256', fingerprintInput);
+      const fileBytes = await file.arrayBuffer();
+      const digest = await crypto.subtle.digest('SHA-256', fileBytes);
       const checksum = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
       const response = await fetch(`/api/academic/terms/${termId}/imports`, {
         method: 'POST',
