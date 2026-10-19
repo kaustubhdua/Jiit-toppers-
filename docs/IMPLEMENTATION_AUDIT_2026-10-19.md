@@ -28,8 +28,8 @@ These changes are **not** a claim that the overall project is finished.
 |---|---|---|
 | Home/navigation | UI works as a client-side prototype; navigation is local state, not deep-link routing | URL state/history, responsive and accessibility verification |
 | Academic calculators | Local attendance and SGPA existed; branch adds attendance forecasting and cumulative GPA calculation | Verify calculations against current programme policy; automated tests must pass |
-| CGPA/grade history | Owner-scoped grade API, manual grade entry and CSV grade import implemented; live database unavailable | Verify live persistence and official grading policy; JSON export and term deletion are implemented, but per-record deletion still needs review |
-| Attendance records | Owner-scoped snapshots API, manual entry and CSV attendance import implemented; live database unavailable | Verify live persistence and history; JSON export and term deletion are implemented, but per-snapshot deletion and policy/source verification remain |
+| CGPA/grade history | Owner-scoped grade API, manual grade entry, CSV grade import, grade deletion, subject deletion, JSON export and term deletion implemented; live database unavailable | Verify live persistence and official grading policy; live cross-user denial and deletion behavior remain untested against the inactive database |
+| Attendance records | Owner-scoped snapshots API, manual entry, CSV attendance import and latest-snapshot deletion implemented; live database unavailable | Verify live persistence/history and policy/source; deletion behavior remains untested against the inactive database |
 | Study Vault | Workspace scaffold; branch adds outbound PYQJIIT and Web kiosk source cards | Approved resource catalogue, permissions, metadata, moderation and search |
 | PYQs | External archive link only; no archive copying or API integration | Maintainer permission/API/terms review before import or mirroring |
 | Timetable/exams | Placeholder cards | Verified source or user import, preview, timezone and stale-data handling |
@@ -93,7 +93,7 @@ These changes are **not** a claim that the overall project is finished.
 - lib/supabase/*, proxy.ts, app/sign-in/*, app/auth/*: passwordless email auth scaffold; not live-tested while Supabase is inactive.
 - lib/auth/current-user.ts and app/api/me: verified identity mapping and account profile API.
 - prisma schema + 20261019000100_academic_records migration: private term, subject, grade, attendance snapshot and import models.
-- app/api/academic/*: owner-scoped term, subject, grade, attendance and transactional CSV import APIs.
+- app/api/academic/*: owner-scoped term, subject, grade, attendance, export, deletion and transactional CSV import APIs. Mutating JSON routes now enforce streamed body-size limits.
 - lib/academic/parse-csv.mjs/.ts, components/academic-csv-import.tsx and tests/academic-csv.test.mjs: bounded client-side CSV parsing, preview and validation.
 - lib/security/safe-redirect.mjs and tests/safe-redirect.test.mjs: validated local-only callback redirect helper.
 - components/jt-workspace.tsx: renders the source panel inside Study Vault.
@@ -109,7 +109,7 @@ These changes are **not** a claim that the overall project is finished.
 - [ ] Cross-user read/write/delete/download tests pass.
 - [ ] Migrations have been applied and verified in a disposable/staging database.
 - [ ] Data API/RLS and private-storage policies are verified against the real project.
-- [ ] CSV imports are bounded, previewed, owner-scoped and transactional; verify live behavior, add account deletion and private-file cleanup before enabling raw uploads.
+- [ ] CSV imports are bounded, previewed, owner-scoped and transactional; verify live behavior. Subject, grade and attendance deletion APIs exist, but account deletion and private-file cleanup remain unimplemented before raw uploads.
 - [ ] Academic calculations are checked against current policy and their assumptions are visible.
 - [ ] All workspace screens are classified as working, intentionally deferred or removed—not falsely presented as live services.
 - [ ] Mobile/accessibility/performance checks pass.
