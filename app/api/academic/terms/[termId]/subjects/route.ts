@@ -80,3 +80,37 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
   }
 }
+
+const subjectUpdateSchema = z.object({
+  id: z.string().min(1).max(100),
+  name: z.string().trim().min(1).max(120),
+  credits: z.number().min(0.1).max(30).refine(value => Math.abs(value * 10 - Math.round(value * 10)) < 1e-8),
+}).strict();
+
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ termId: string }> }) {
+  if (request.headers.get('origin') !== request.nextUrl.origin) return jsonNoStore({ error: 'ORIGIN_NOT_ALLOWED' }, 403);
+  const auth = await requireAppUser();
+  if (!auth.ok) return jsonNoStore({ error: auth.code }, auth.status);
+  const { termId } = await params;
+
+  let body: unknown;
+  try { body = await request.json(); } catch { return jsonNoStore({ error: 'INVALID_JSON' }, 400); }
+  const parsed = subjectUpdateSchema.safeParse(body);
+  if (!parsed.success) return jsonNoStore({ error: 'INVALID_SUBJECT' }, 400);
+
+  try {
+    if (!await ownedTerm(auth.user.id, termId)) return jsonNoStore({ error: 'TERM_NOT_FOUND' }, 404);
+    const existing = await prisma.studentSubject.findFirst({
+      where: { id: parsed.data.id, userId: auth.user.id, termId },
+      select: { id: true },
+    });
+    if (!existing) return jsonNoStore({ error: 'SUBJECT_NOT_FOUND' }, 404);
+    const subject = await prisma.studentSubject.update({
+      where: { id: existing.id },
+      data: { name: parsed.data.name, credits: parsed.data.credits },
+    });
+    return jsonNoStore({ subject });
+  } catch {
+    return jsonNoStore({ error: 'DATABASE_UNAVAILABLE' }, 503);
+  }
+}
