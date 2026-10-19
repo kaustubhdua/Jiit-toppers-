@@ -1,12 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { getSupabaseConfig } from './config';
-
-export type AuthStatus = {
-  configured: boolean;
-  reachable: boolean;
-  email: string | null;
-};
+import { getSupabaseConfig, type AuthStatus } from './config';
 
 export async function createClient() {
   const config = getSupabaseConfig();
