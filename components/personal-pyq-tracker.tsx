@@ -65,8 +65,10 @@ export function PersonalPyqTracker() {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextEntries));
       setEntries(nextEntries);
       setError("");
+      return true;
     } catch {
       setError("Browser storage is unavailable or full. Your changes were not saved; export existing records if possible.");
+      return false;
     }
   }
 
@@ -89,7 +91,7 @@ export function PersonalPyqTracker() {
       notes: notes.trim().slice(0, 1000),
       createdAt: new Date().toISOString(),
     };
-    commitEntries([entry, ...entries]);
+    if (!ready || !commitEntries([entry, ...entries])) return;
     setTitle("");
     setSubject("");
     setUrl("");
@@ -116,7 +118,7 @@ export function PersonalPyqTracker() {
           <span className="jt-kicker">PERSONAL WORKSPACE · DEVICE-LOCAL</span>
           <h2 id="personal-pyq-title"><BookMarked size={22} aria-hidden="true" /> My paper tracker</h2>
         </div>
-        <button className="jt-secondary" type="button" onClick={exportEntries} disabled={!entries.length}>
+        <button className="jt-secondary" type="button" onClick={exportEntries} disabled={!ready || !entries.length}>
           <Download size={16} aria-hidden="true" /> Export records
         </button>
       </div>
@@ -132,7 +134,7 @@ export function PersonalPyqTracker() {
         </div>
         <label>Private notes (optional)<textarea maxLength={1000} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Topics to revise, attempt notes…" /></label>
         {error && <p role="alert" className="jt-error">{error}</p>}
-        <button className="jt-primary" type="submit"><Plus size={16} aria-hidden="true" /> Save paper</button>
+        <button className="jt-primary" type="submit" disabled={!ready}><Plus size={16} aria-hidden="true" /> Save paper</button>
       </form>
 
       <div className="jt-section-head">
