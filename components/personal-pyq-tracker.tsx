@@ -75,6 +75,7 @@ export function PersonalPyqTracker() {
   function addEntry(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    if (entries.length >= 500) return setError("Your local tracker supports up to 500 papers. Export or delete a record before adding another.");
     if (!title.trim()) return setError("Add a paper title before saving.");
     if (!isValidPyqHttpsUrl(url.trim())) return setError("Enter a valid HTTPS source link.");
     if (year && (!/^20\d{2}$/.test(year) || Number(year) > new Date().getFullYear() + 1)) {
