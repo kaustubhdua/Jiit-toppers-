@@ -27,6 +27,20 @@ function validHttpsUrl(value: string) {
   }
 }
 
+function isEntry(value: unknown): value is Entry {
+  if (!value || typeof value !== "object") return false;
+  const entry = value as Partial<Entry>;
+  return typeof entry.id === "string"
+    && typeof entry.title === "string"
+    && typeof entry.subject === "string"
+    && typeof entry.url === "string"
+    && validHttpsUrl(entry.url)
+    && typeof entry.year === "string"
+    && statuses.includes(entry.status as Status)
+    && typeof entry.notes === "string"
+    && typeof entry.createdAt === "string";
+}
+
 export function PersonalPyqTracker() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [ready, setReady] = useState(false);
@@ -39,32 +53,46 @@ export function PersonalPyqTracker() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed: unknown = JSON.parse(raw);
-        if (Array.isArray(parsed)) setEntries(parsed as Entry[]);
+    let active = true;
+    const timer = window.setTimeout(() => {
+      let storedEntries: Entry[] = [];
+      let loadError = "";
+      try {
+        const raw = window.localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed: unknown = JSON.parse(raw);
+          if (Array.isArray(parsed)) storedEntries = parsed.filter(isEntry);
+        }
+      } catch {
+        loadError = "Saved records could not be read from this browser.";
       }
-    } catch {
-      setError("Saved records could not be read from this browser.");
-    } finally {
-      setReady(true);
-    }
-  }, []);
+      if (active) {
+        setEntries(storedEntries);
+        if (loadError) setError(loadError);
+        setReady(true);
+      }
+    }, 0);
 
-  useEffect(() => {
-    if (!ready) return;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-    } catch {
-      setError("Browser storage is unavailable or full. Export your records before leaving.");
-    }
-  }, [entries, ready]);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
+  }, []);
 
   const visible = useMemo(
     () => entries.filter((entry) => filter === "ALL" || entry.status === filter),
     [entries, filter],
   );
+
+  function commitEntries(nextEntries: Entry[]) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextEntries));
+      setEntries(nextEntries);
+      setError("");
+    } catch {
+      setError("Browser storage is unavailable or full. Your changes were not saved; export existing records if possible.");
+    }
+  }
 
   function addEntry(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -85,7 +113,7 @@ export function PersonalPyqTracker() {
       notes: notes.trim().slice(0, 1000),
       createdAt: new Date().toISOString(),
     };
-    setEntries((current) => [entry, ...current]);
+    commitEntries([entry, ...entries]);
     setTitle("");
     setSubject("");
     setUrl("");
@@ -144,10 +172,10 @@ export function PersonalPyqTracker() {
               <span className="jt-pill">{entry.subject || "Subject not specified"}{entry.year ? ` · ${entry.year}` : ""}</span>
               <h3>{entry.title}</h3>
               {entry.notes && <p>{entry.notes}</p>}
-              <label>Preparation status<select value={entry.status} onChange={(e) => setEntries((current) => current.map((item) => item.id === entry.id ? { ...item, status: e.target.value as Status } : item))}>{statuses.map((status) => <option key={status} value={status}>{status}</option>)}</select></label>
+              <label>Preparation status<select value={entry.status} onChange={(e) => commitEntries(entries.map((item) => item.id === entry.id ? { ...item, status: e.target.value as Status } : item))}>{statuses.map((status) => <option key={status} value={status}>{status}</option>)}</select></label>
               <div className="jt-source-footer">
                 <a href={entry.url} target="_blank" rel="noopener noreferrer">Open original source <ExternalLink size={14} aria-hidden="true" /></a>
-                <button className="jt-secondary" type="button" aria-label={`Delete ${entry.title}`} onClick={() => setEntries((current) => current.filter((item) => item.id !== entry.id))}><Trash2 size={15} /> Delete</button>
+                <button className="jt-secondary" type="button" aria-label={`Delete ${entry.title}`} onClick={() => commitEntries(entries.filter((item) => item.id !== entry.id))}><Trash2 size={15} /> Delete</button>
               </div>
             </article>
           ))}
