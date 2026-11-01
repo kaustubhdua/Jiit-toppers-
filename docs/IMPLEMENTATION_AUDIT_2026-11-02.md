@@ -13,16 +13,16 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 
 ## Repository verification
 
-- The consolidated PYQJIIT research PR #9 was merged to `main` at commit `9b49a6ee8e46a0ad0a1367ad4391ed086a3d8b9a`.
-- PR #11 (official JIIT source directory, account guidance correction, readiness health reporting and documentation) was merged at `63f0ec9f6792209205aa4710c1386d2a59f4ef6a`; its CI passed.
-- PR #10 (personal PYQ tracker, tested storage validation and Study Vault integration) was merged at `a326a1d1e757a5f591ab8be383568e9a44ef738d`; its final CI passed, including tests, lint, typecheck, Prisma validation and production build.
-- PR #12 (ignore all local environment files and `.vercel` metadata while keeping `.env.example`) was merged at `3dbef10d488a9e39f33713fea782f1fe6b02a7e9`; its CI passed.
-- The current `main` commit after PR #12 is `3dbef10d488a9e39f33713fea782f1fe6b02a7e9`; the post-merge main-branch CI run is queued at audit update time.
-- The CI run for the merged PYQJIIT change completed successfully.
-- PR #10 adds a personal, device-local PYQ reference tracker. Its first CI run failed lint due to synchronous state updates in effects; this was corrected and reusable storage validation helpers plus tests were added. The newest CI run must be checked before merge.
-- The main branch's CI workflow runs unit tests, ESLint, TypeScript typecheck, Prisma schema validation and a Next.js production build.
-- The repository tree has 83 tracked files and no README file, consistent with the owner's documentation-removal preference; operational/release-gate documentation remains under `docs/`.
-- No production deployment or Vercel project association has been verified.
+- The default branch is `main`; its latest observed commit is `75d29543bad187a3d2bf20768f8c3f1e507358c7` (2 November 2026 audit).
+- PRs #9–#17 and #20, #23, #25, #26, #30 and #31 were merged in the preceding implementation/security work.
+- PR #32 refreshed the dependency and CI audit and was merged after its documentation-only CI run passed.
+- PR #33 upgraded `lucide-react` from 0.468.0 to 0.577.0; the complete repository CI run passed before merge.
+- PR #34 removes a non-existent Dependabot label from the configuration. Its CI was still running at the time of this audit update; do not treat it as merged until its checks pass.
+- The CI workflow runs unit tests, ESLint, TypeScript typecheck, Prisma schema validation and a Next.js production build. The latest main push run after PR #33 was queued at the time of checking; PR #34's run had started but was still installing dependencies. A green PR check does not replace a successful post-merge main run.
+- The repository has no README file, consistent with the owner's earlier preference. Operational/release-gate documentation remains under `docs/`.
+- The intended Supabase project `Jiit-toppers-` remains inactive. A fresh project inventory shows two active healthy projects (`common 1` and `jai-hack`) in the JYC organization; no other project has been paused or altered.
+- Supabase migration-history inspection again failed with a database connection timeout. The live schema and migration alignment remain unknown.
+- Vercel has six projects in the connected account, but none is connected to this repository. No JIIT Toppers production deployment or runtime smoke test is verified.
 
 ## Implemented capabilities
 
@@ -50,7 +50,7 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 - Attendance, SGPA/CGPA and forecast calculations with unit tests.
 - Browser-local study planner and exam schedule planner with iCalendar export.
 - External PYQJIIT and JIIT Web Kiosk links.
-- Personal PYQ reference tracker is merged and available in the Study Vault. It remains device-local, not account-synced.
+- Personal PYQ reference tracker is merged and available in the Study Vault. It remains device-local, not account-synced; the UI warns that anyone with access to the browser profile may view stored records, discourages sensitive notes, and caps saved records at 500.
 
 ## Gaps and release blockers
 
@@ -78,7 +78,7 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 - Add accessibility checks (keyboard, focus, screen reader, contrast) and responsive visual regression checks.
 - Add rate limiting to public/authenticated mutation endpoints and abuse controls for sign-in.
 - Add monitoring, error reporting, backup/restore runbook and data-retention/deletion policy.
-- Add dependency and secret scanning to CI, and document supported Node/runtime versions.
+- Add dependency and secret scanning to CI, and document supported Node/runtime versions. Weekly Dependabot updates for npm and GitHub Actions are now enabled; automated updates still require review and CI.
 - Verify PWA install/offline behavior instead of relying on the manifest alone.
 
 ## Official JIIT source research
@@ -93,6 +93,13 @@ The following public JIIT pages are suitable source entry points. They should be
 - Campus facilities FAQ: https://www.jiit.ac.in/faq?type=Campus+Facilities
 - Official campus contact details: https://www.jiit.ac.in/contact-us
 - PYQJIIT: https://pyqjiit.rushilk.dev/ (independent community source; link-first only pending permission)
+
+## Dependency security review
+
+- The committed lockfile currently resolves Next.js 16.4.3, eslint-config-next 16.4.3, React/React DOM 19.3.1, Prisma CLI/client 6.19.3, @types/node 22.20.5 and lucide-react 0.577.0.
+- CI now uses actions/checkout@v7 and actions/setup-node@v7 with Node.js 22.
+- The October 2026 Next.js security update states that the relevant 16.x fixes are available from 16.4.1; the locked 16.4.3 is above that patch floor. Keep the lockfile current and review Dependabot updates rather than relying on semver ranges alone.
+- References: https://nextjs.org/blog/nextjs-security-update-october-14-2026 and https://github.com/vercel/next.js/security/advisories.
 
 ## Verification matrix
 
