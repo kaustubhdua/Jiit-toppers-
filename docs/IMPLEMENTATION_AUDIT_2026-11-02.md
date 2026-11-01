@@ -14,9 +14,14 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 ## Repository verification
 
 - The consolidated PYQJIIT research PR #9 was merged to `main` at commit `9b49a6ee8e46a0ad0a1367ad4391ed086a3d8b9a`.
+- PR #11 (official JIIT source directory, account guidance correction, readiness health reporting and documentation) was merged at `63f0ec9f6792209205aa4710c1386d2a59f4ef6a`; its CI passed.
+- PR #10 (personal PYQ tracker, tested storage validation and Study Vault integration) was merged at `a326a1d1e757a5f591ab8be383568e9a44ef738d`; its final CI passed, including tests, lint, typecheck, Prisma validation and production build.
+- PR #12 (ignore all local environment files and `.vercel` metadata while keeping `.env.example`) was merged at `3dbef10d488a9e39f33713fea782f1fe6b02a7e9`; its CI passed.
+- The current `main` commit after PR #12 is `3dbef10d488a9e39f33713fea782f1fe6b02a7e9`; the post-merge main-branch CI run is queued at audit update time.
 - The CI run for the merged PYQJIIT change completed successfully.
 - PR #10 adds a personal, device-local PYQ reference tracker. Its first CI run failed lint due to synchronous state updates in effects; this was corrected and reusable storage validation helpers plus tests were added. The newest CI run must be checked before merge.
 - The main branch's CI workflow runs unit tests, ESLint, TypeScript typecheck, Prisma schema validation and a Next.js production build.
+- The repository tree has 83 tracked files and no README file, consistent with the owner's documentation-removal preference; operational/release-gate documentation remains under `docs/`.
 - No production deployment or Vercel project association has been verified.
 
 ## Implemented capabilities
@@ -45,7 +50,7 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 - Attendance, SGPA/CGPA and forecast calculations with unit tests.
 - Browser-local study planner and exam schedule planner with iCalendar export.
 - External PYQJIIT and JIIT Web Kiosk links.
-- Personal PYQ reference tracker is being added in PR #10.
+- Personal PYQ reference tracker is merged and available in the Study Vault. It remains device-local, not account-synced.
 
 ## Gaps and release blockers
 
@@ -100,7 +105,7 @@ The following public JIIT pages are suitable source entry points. They should be
 | Academic ownership | Owner-scoped queries and RLS enabled | Two-account tests outstanding |
 | CSV import | Parser, UI and routes | End-to-end database import test outstanding |
 | Export/delete | Server routes and UI | Backup/restore and live data test outstanding |
-| PYQ archive | External link | Provider-owned; no integration contract |
+| PYQ archive | External link and local personal tracker | Provider-owned; no integration contract; tracker has no cloud sync |
 | Production | No verified Vercel project connection | Not deployed/verified |
 
 ## Definition of done
