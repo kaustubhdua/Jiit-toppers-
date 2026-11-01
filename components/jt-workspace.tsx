@@ -2,6 +2,7 @@ import { BookOpen, BriefcaseBusiness, Building2, CalendarDays, Calculator, Gradu
 import type { Section } from './jt-navigation';
 import { AcademicCalculators } from './academic-calculators';
 import { PyqDiscovery } from './pyq-discovery';
+import { PersonalPyqTracker } from './personal-pyq-tracker';
 import { StudyPlanner } from './study-planner';
 import { ExamSchedulePlanner } from './exam-schedule-planner';
 import { OfficialJiitLinks } from './official-jiit-links';
@@ -26,7 +27,7 @@ export function JTWorkspace({ section, query }: { section: WorkspaceSection; que
     {normalizedQuery && <p role="status" className="jt-lead" style={{fontSize:13}}>Showing {cards.length} matching workspace item{cards.length === 1 ? '' : 's'}.</p>}
     {cards.length ? <div className="jt-grid jt-three">{cards.map(({title,body,icon:Icon})=><article className="jt-card" key={title}><Icon size={22}/><h3>{title}</h3><p>{body}</p><span className="jt-pill">{section === 'resources' && title === 'Previous-year papers' ? 'External source' : 'Planned / foundation'}</span></article>)}</div> : <div className="jt-card" role="status"><h3>No matching items</h3><p>Try a different search term.</p></div>}
     {section === 'academics' && <AcademicCalculators />}
-    {section === 'resources' && <PyqDiscovery />}
+    {section === 'resources' && <><PyqDiscovery /><PersonalPyqTracker /></>}
     {section === 'exams' && <StudyPlanner />}
     {section === 'exams' && <ExamSchedulePlanner />}
     <OfficialJiitLinks section={section} />
