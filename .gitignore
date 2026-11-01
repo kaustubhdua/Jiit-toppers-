@@ -1,8 +1,8 @@
 node_modules
 .next
-.env
-.env.local
-.env*.local
+.vercel
+.env*
+!.env.example
 prisma/*.db
 coverage
 .DS_Store
