@@ -17,7 +17,9 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 - PR #11 (official JIIT source directory, account guidance correction, readiness health reporting and documentation) was merged at `63f0ec9f6792209205aa4710c1386d2a59f4ef6a`; its CI passed.
 - PR #10 (personal PYQ tracker, tested storage validation and Study Vault integration) was merged at `a326a1d1e757a5f591ab8be383568e9a44ef738d`; its final CI passed, including tests, lint, typecheck, Prisma validation and production build.
 - PR #12 (ignore all local environment files and `.vercel` metadata while keeping `.env.example`) was merged at `3dbef10d488a9e39f33713fea782f1fe6b02a7e9`; its CI passed.
-- The current `main` commit after PR #12 is `3dbef10d488a9e39f33713fea782f1fe6b02a7e9`; the post-merge main-branch CI run is queued at audit update time.
+- PR #14 (browser-local PYQ tracker privacy disclosure and 500-record cap) was merged at `7752140f5aad6fedaa989ec5a748537bb7384b1b`; its CI passed.
+- PR #15 (weekly Dependabot updates for npm and GitHub Actions) was merged at `fbeb417bbfe591db1d5627570b90ac3bcfb69197`; its PR CI passed and Dependabot configuration validation passed.
+- The current `main` commit after PR #15 is `fbeb417bbfe591db1d5627570b90ac3bcfb69197`; post-merge main CI is running at audit update time.
 - The CI run for the merged PYQJIIT change completed successfully.
 - PR #10 adds a personal, device-local PYQ reference tracker. Its first CI run failed lint due to synchronous state updates in effects; this was corrected and reusable storage validation helpers plus tests were added. The newest CI run must be checked before merge.
 - The main branch's CI workflow runs unit tests, ESLint, TypeScript typecheck, Prisma schema validation and a Next.js production build.
@@ -50,7 +52,7 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 - Attendance, SGPA/CGPA and forecast calculations with unit tests.
 - Browser-local study planner and exam schedule planner with iCalendar export.
 - External PYQJIIT and JIIT Web Kiosk links.
-- Personal PYQ reference tracker is merged and available in the Study Vault. It remains device-local, not account-synced.
+- Personal PYQ reference tracker is merged and available in the Study Vault. It remains device-local, not account-synced; the UI warns that anyone with access to the browser profile may view stored records, discourages sensitive notes, and caps saved records at 500.
 
 ## Gaps and release blockers
 
@@ -78,7 +80,7 @@ The codebase is a credible foundation, but several user-facing areas remain plan
 - Add accessibility checks (keyboard, focus, screen reader, contrast) and responsive visual regression checks.
 - Add rate limiting to public/authenticated mutation endpoints and abuse controls for sign-in.
 - Add monitoring, error reporting, backup/restore runbook and data-retention/deletion policy.
-- Add dependency and secret scanning to CI, and document supported Node/runtime versions.
+- Add dependency and secret scanning to CI, and document supported Node/runtime versions. Weekly Dependabot updates for npm and GitHub Actions are now enabled; automated updates still require review and CI.
 - Verify PWA install/offline behavior instead of relying on the manifest alone.
 
 ## Official JIIT source research
@@ -93,6 +95,12 @@ The following public JIIT pages are suitable source entry points. They should be
 - Campus facilities FAQ: https://www.jiit.ac.in/faq?type=Campus+Facilities
 - Official campus contact details: https://www.jiit.ac.in/contact-us
 - PYQJIIT: https://pyqjiit.rushilk.dev/ (independent community source; link-first only pending permission)
+
+## Dependency security review
+
+- The committed lockfile currently resolves Next.js 16.4.2 and React/React DOM 19.3.1.
+- The October 2026 Next.js security update states that the relevant 16.x fixes are available from 16.4.1; the locked 16.4.2 is above that patch floor. Keep the lockfile current and review Dependabot updates rather than relying on semver ranges alone.
+- References: https://nextjs.org/blog/nextjs-security-update-october-14-2026 and https://github.com/vercel/next.js/security/advisories.
 
 ## Verification matrix
 
