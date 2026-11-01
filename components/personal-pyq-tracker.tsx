@@ -75,6 +75,7 @@ export function PersonalPyqTracker() {
   function addEntry(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    if (entries.length >= 500) return setError("Your local tracker supports up to 500 papers. Export or delete a record before adding another.");
     if (!title.trim()) return setError("Add a paper title before saving.");
     if (!isValidPyqHttpsUrl(url.trim())) return setError("Enter a valid HTTPS source link.");
     if (year && (!/^20\d{2}$/.test(year) || Number(year) > new Date().getFullYear() + 1)) {
@@ -122,7 +123,7 @@ export function PersonalPyqTracker() {
           <Download size={16} aria-hidden="true" /> Export records
         </button>
       </div>
-      <p className="jt-source-note">Save links you choose to study and track your progress. Records stay in this browser; they are not synced to an account or shared with JIIT Toppers.</p>
+      <p className="jt-source-note">Save links you choose to study and track your progress. Records stay in this browser and are not synced to an account or shared with JIIT Toppers. Anyone with access to this browser profile may be able to view them, so avoid storing sensitive information.</p>
 
       <form className="jt-card" onSubmit={addEntry}>
         <h3>Add a paper reference</h3>
@@ -132,7 +133,7 @@ export function PersonalPyqTracker() {
           <label>Source URL<input required type="url" inputMode="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" /></label>
           <label>Paper year (optional)<input inputMode="numeric" maxLength={4} value={year} onChange={(e) => setYear(e.target.value)} placeholder="2025" /></label>
         </div>
-        <label>Private notes (optional)<textarea maxLength={1000} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Topics to revise, attempt notes…" /></label>
+        <label>Personal notes (optional)<textarea maxLength={1000} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Topics to revise, attempt notes…" /></label>
         {error && <p role="alert" className="jt-error">{error}</p>}
         <button className="jt-primary" type="submit" disabled={!ready}><Plus size={16} aria-hidden="true" /> Save paper</button>
       </form>
