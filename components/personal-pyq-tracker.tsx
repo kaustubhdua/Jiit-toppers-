@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { BookMarked, Download, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { isValidPyqHttpsUrl, parseStoredPyqEntries } from "@/lib/pyq-study-vault.mjs";
 
 type Status = "SAVED" | "PLANNED" | "ATTEMPTED" | "REVIEWED";
 type Entry = {
@@ -18,28 +19,6 @@ type Entry = {
 const STORAGE_KEY = "jiit-toppers:pyq-study-vault:v1";
 const statuses: Status[] = ["SAVED", "PLANNED", "ATTEMPTED", "REVIEWED"];
 
-function validHttpsUrl(value: string) {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" && Boolean(url.hostname);
-  } catch {
-    return false;
-  }
-}
-
-function isEntry(value: unknown): value is Entry {
-  if (!value || typeof value !== "object") return false;
-  const entry = value as Partial<Entry>;
-  return typeof entry.id === "string"
-    && typeof entry.title === "string"
-    && typeof entry.subject === "string"
-    && typeof entry.url === "string"
-    && validHttpsUrl(entry.url)
-    && typeof entry.year === "string"
-    && statuses.includes(entry.status as Status)
-    && typeof entry.notes === "string"
-    && typeof entry.createdAt === "string";
-}
 
 export function PersonalPyqTracker() {
   const [entries, setEntries] = useState<Entry[]>([]);
@@ -59,10 +38,7 @@ export function PersonalPyqTracker() {
       let loadError = "";
       try {
         const raw = window.localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed: unknown = JSON.parse(raw);
-          if (Array.isArray(parsed)) storedEntries = parsed.filter(isEntry);
-        }
+        storedEntries = parseStoredPyqEntries(raw);
       } catch {
         loadError = "Saved records could not be read from this browser.";
       }
@@ -98,7 +74,7 @@ export function PersonalPyqTracker() {
     event.preventDefault();
     setError("");
     if (!title.trim()) return setError("Add a paper title before saving.");
-    if (!validHttpsUrl(url.trim())) return setError("Enter a valid HTTPS source link.");
+    if (!isValidPyqHttpsUrl(url.trim())) return setError("Enter a valid HTTPS source link.");
     if (year && (!/^20\d{2}$/.test(year) || Number(year) > new Date().getFullYear() + 1)) {
       return setError("Enter a valid four-digit paper year.");
     }
