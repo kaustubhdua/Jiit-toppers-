@@ -6,8 +6,6 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
     ignore:
       - dependency-name: "@types/node"
         update-types:
@@ -36,5 +34,3 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
-    labels:
-      - dependencies
