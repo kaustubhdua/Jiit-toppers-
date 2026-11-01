@@ -98,7 +98,8 @@ The following public JIIT pages are suitable source entry points. They should be
 
 ## Dependency security review
 
-- The committed lockfile currently resolves Next.js 16.4.2 and React/React DOM 19.3.1.
+- The committed lockfile currently resolves Next.js 16.4.3, eslint-config-next 16.4.3, React/React DOM 19.3.1, Prisma CLI/client 6.19.3 and @types/node 22.20.5.
+- CI now uses actions/checkout@v7 and actions/setup-node@v7 with Node.js 22.
 - The October 2026 Next.js security update states that the relevant 16.x fixes are available from 16.4.1; the locked 16.4.2 is above that patch floor. Keep the lockfile current and review Dependabot updates rather than relying on semver ranges alone.
 - References: https://nextjs.org/blog/nextjs-security-update-october-14-2026 and https://github.com/vercel/next.js/security/advisories.
 
