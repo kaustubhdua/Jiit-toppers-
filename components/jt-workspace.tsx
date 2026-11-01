@@ -5,6 +5,7 @@ import { PyqDiscovery } from './pyq-discovery';
 import { PersonalPyqTracker } from './personal-pyq-tracker';
 import { StudyPlanner } from './study-planner';
 import { ExamSchedulePlanner } from './exam-schedule-planner';
+import { OfficialJiitLinks } from './official-jiit-links';
 
 type WorkspaceSection = Exclude<Section, 'home'>;
 type WorkspaceCard = { title: string; body: string; icon: LucideIcon };
@@ -29,6 +30,7 @@ export function JTWorkspace({ section, query }: { section: WorkspaceSection; que
     {section === 'resources' && <><PyqDiscovery /><PersonalPyqTracker /></>}
     {section === 'exams' && <StudyPlanner />}
     {section === 'exams' && <ExamSchedulePlanner />}
-    {section !== 'resources' && <p className="jt-lead" style={{fontSize:13,marginTop:24}}>This workspace is still being built. Do not treat its placeholder cards as live JIIT services or official records.</p>}
+    <OfficialJiitLinks section={section} />
+    {section !== 'resources' && <p className="jt-lead" style={{fontSize:13,marginTop:24}}>This workspace includes planning surfaces and verified source links, but its placeholder cards are not live JIIT services or official records.</p>}
   </section>;
 }
