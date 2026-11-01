@@ -38,3 +38,8 @@ test("loads only valid records from local storage JSON", () => {
   assert.deepEqual(parseStoredPyqEntries(JSON.stringify({ entries: [validEntry] })), []);
   assert.deepEqual(parseStoredPyqEntries("x".repeat(2_000_001)), []);
 });
+
+test("caps restored local records to the supported maximum", () => {
+  const many = Array.from({ length: 510 }, (_, index) => ({ ...validEntry, id: `paper-${index}` }));
+  assert.equal(parseStoredPyqEntries(JSON.stringify(many)).length, 500);
+});
